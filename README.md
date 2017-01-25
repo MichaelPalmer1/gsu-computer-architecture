@@ -1,5 +1,7 @@
 # Computer Architecture
 
+Android applications developed in CSCI 5331 at Georgia Southern University
+
 ## Labs
 
-* [Lab 1](https://git.michaeldpalmer.com/classes/computer-architecture/tree/master/CSCI_5331_Spring2017_Palmer_Lab01)
+* [Lab 1](CSCI_5331_Spring2017_Palmer_Lab01)
