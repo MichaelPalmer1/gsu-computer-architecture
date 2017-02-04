@@ -4,6 +4,10 @@ public class NBitALU {
     private boolean[] a, b, x, sum, carry;
 
     public NBitALU(int numBits) {
+        if (numBits <= 0) {
+            System.err.println("The number of bits must be a positive number.");
+            System.exit(1);
+        }
         this.numBits = numBits;
         sum = new boolean[numBits];
         carry = new boolean[numBits];
@@ -21,7 +25,7 @@ public class NBitALU {
     public void execute(boolean op) {
         if (this.a.length != numBits || this.b.length != numBits) {
             System.err.printf("A and B must have exactly %d bits.\n", numBits);
-            return;
+            System.exit(1);
         }
 
         this.op = op;
