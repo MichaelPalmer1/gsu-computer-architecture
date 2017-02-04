@@ -124,11 +124,9 @@ public class NBitALU {
         String header = addition ? "ADDITION" : "SUBTRACTION";
         boolean[][] operations = generateOperations();
 
-        System.out.println();
-        System.out.println("##################################");
+        System.out.println("\n##################################");
         System.out.printf("#           %-20s #\n", header);
-        System.out.println("##################################");
-        System.out.println();
+        System.out.println("##################################\n");
         for (boolean[] operationA : operations) {
             setA(operationA);
             for (boolean[] operationB : operations) {
