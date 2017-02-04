@@ -8,28 +8,8 @@ public class TestNBitALU extends TestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        int bits = 5;
-        this.alu = new NBitALU(bits);
-        this.operations = generateOperations(bits);
-    }
-
-    private boolean[][] generateOperations(int numBits) {
-        boolean[][] operations = new boolean[(int) Math.pow(2, numBits)][numBits];
-        int num = 0, numTimes = 1;
-
-        for (int i = numBits - 1; i >= 0; i--) {
-            boolean value = false;
-            for (int j = 0; j < operations.length; j++) {
-                operations[j][i] = value;
-                num++;
-                if (numTimes == num) {
-                    value = !value;
-                    num = 0;
-                }
-            }
-            numTimes *= 2;
-        }
-        return operations;
+        this.alu = new NBitALU(6);
+        this.operations = this.alu.generateOperations();
     }
 
     public void testAddition() {

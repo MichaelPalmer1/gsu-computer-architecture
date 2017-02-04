@@ -94,8 +94,12 @@ public class NBitALU {
         System.out.printf("Result: %d %s   (%d)\n", overflow ? 1 : 0, sum, getSum());
     }
 
-    public void test(boolean addition) {
-        String header = addition ? "ADDITION" : "SUBTRACTION";
+    /**
+     * Generate all the possible inputs
+     *
+     * @return 2d array of booleans representing all possible operations
+     */
+    public boolean[][] generateOperations() {
         boolean[][] operations = new boolean[(int) Math.pow(2, numBits)][numBits];
         int times = 0, numTimes = 1;
 
@@ -113,6 +117,12 @@ public class NBitALU {
             }
             numTimes *= 2;
         }
+        return operations;
+    }
+
+    public void test(boolean addition) {
+        String header = addition ? "ADDITION" : "SUBTRACTION";
+        boolean[][] operations = generateOperations();
 
         System.out.println();
         System.out.println("##################################");
