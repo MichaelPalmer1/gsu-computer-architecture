@@ -33,7 +33,7 @@ abstract class Gate {
     public abstract void execute();
 
     public void print() {
-        System.out.println(this.getClass().getCanonicalName() + ":");
+        System.out.println(this.getClass().getSimpleName() + ":");
         System.out.printf("Inputs: (a) %b, (b) %b\n", this.inputA, this.inputB);
         System.out.printf("Output: %b\n", this.output);
     }

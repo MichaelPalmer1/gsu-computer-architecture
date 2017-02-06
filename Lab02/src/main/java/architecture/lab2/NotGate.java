@@ -12,7 +12,7 @@ public class NotGate extends Gate {
 
     @Override
     public void print() {
-        System.out.println(this.getClass().getCanonicalName() + ":");
+        System.out.println(this.getClass().getSimpleName() + ":");
         System.out.printf("Input: %b\n", this.inputA);
         System.out.printf("Output: %b\n", this.output);
     }

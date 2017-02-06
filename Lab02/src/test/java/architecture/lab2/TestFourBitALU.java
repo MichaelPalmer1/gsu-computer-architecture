@@ -3,9 +3,13 @@ package architecture.lab2;
 import architecture.lab2.FourBitALU;
 import junit.framework.TestCase;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+
 public class TestFourBitALU extends TestCase {
 
     private FourBitALU alu;
+    private final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
     private boolean[][] operations = {
             {false, false, false, false},
@@ -29,7 +33,14 @@ public class TestFourBitALU extends TestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
+        System.setOut(new PrintStream(outputStream));
         this.alu = new FourBitALU();
+    }
+
+    @Override
+    protected void tearDown() throws Exception {
+        super.tearDown();
+        System.setOut(System.out);
     }
 
     public void testAddition() {
@@ -54,6 +65,20 @@ public class TestFourBitALU extends TestCase {
                 assertEquals(this.alu.getSum(), this.alu.getA() + this.alu.getB());
             }
         }
+    }
+
+    public void testPrint() {
+        this.alu.setA(true, true, false, false);
+        this.alu.setB(false, false, true, true);
+        this.alu.execute(false);
+        this.alu.print();
+        String expected = "Carry:    0000\n";
+        expected += "          ----\n";
+        expected += "Input A:  1100   ( 12)\n";
+        expected += "Input B:  0011 + (  3) [0011 before XOR]\n";
+        expected += "          ----\n";
+        expected += "Result: 0 1111   ( 15)\n";
+        assertEquals(expected, outputStream.toString());
     }
 
 }
