@@ -1,3 +1,5 @@
+package architecture.lab2;
+
 public class HalfAdder {
     private AndGate a1 = new AndGate(), a2 = new AndGate();
     private OrGate o1 = new OrGate();

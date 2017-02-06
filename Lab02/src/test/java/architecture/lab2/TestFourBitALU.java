@@ -1,3 +1,6 @@
+package architecture.lab2;
+
+import architecture.lab2.FourBitALU;
 import junit.framework.TestCase;
 
 public class TestFourBitALU extends TestCase {

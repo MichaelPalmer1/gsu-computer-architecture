@@ -1,3 +1,5 @@
+package architecture.lab2;
+
 public class NBitALU {
     private boolean op, overflow;
     private int numBits;

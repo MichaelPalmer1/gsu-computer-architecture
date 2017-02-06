@@ -1,3 +1,6 @@
+package architecture.lab2;
+
+import architecture.lab2.NBitALU;
 import junit.framework.TestCase;
 
 public class TestNBitALU extends TestCase {

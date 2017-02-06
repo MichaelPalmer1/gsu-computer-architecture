@@ -1,3 +1,5 @@
+package architecture.lab2;
+
 public class FourBitALU {
     private FullAdder f0 = new FullAdder(), f1 = new FullAdder(), f2 = new FullAdder(), f3 = new FullAdder();
     private XorGate x0 = new XorGate(), x1 = new XorGate(), x2 = new XorGate(), x3 = new XorGate();

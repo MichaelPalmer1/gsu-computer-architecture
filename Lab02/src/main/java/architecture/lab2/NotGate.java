@@ -1,3 +1,5 @@
+package architecture.lab2;
+
 public class NotGate extends Gate {
 
     public void set(boolean a) {

@@ -1,3 +1,5 @@
+package architecture.lab2;
+
 abstract class Gate {
     boolean inputA, inputB, output;
 

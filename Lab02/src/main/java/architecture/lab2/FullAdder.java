@@ -1,3 +1,5 @@
+package architecture.lab2;
+
 public class FullAdder {
     private HalfAdder h1 = new HalfAdder(), h2 = new HalfAdder();
     private OrGate o1 = new OrGate();

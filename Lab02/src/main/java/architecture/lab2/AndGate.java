@@ -1,3 +1,5 @@
+package architecture.lab2;
+
 public class AndGate extends Gate {
 
     public void execute() {
