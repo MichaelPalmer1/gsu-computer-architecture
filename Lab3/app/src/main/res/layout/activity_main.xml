@@ -36,7 +36,9 @@
 
     </TableRow>
 
-    <TableRow android:gravity="center">
+    <TableRow
+        android:gravity="center"
+        android:layout_marginBottom="10dp">
 
         <Space/>
 
@@ -100,7 +102,9 @@
 
     </TableRow>
 
-    <TableRow android:gravity="center">
+    <TableRow
+        android:gravity="center"
+        android:layout_marginBottom="10dp">
 
         <TextView
             android:layout_width="wrap_content"
@@ -153,7 +157,9 @@
         <Space/>
     </TableRow>
 
-    <TableRow android:gravity="center">
+    <TableRow
+        android:gravity="center"
+        android:layout_marginBottom="10dp">
 
         <TextView
             android:layout_width="wrap_content"
@@ -206,7 +212,11 @@
         <Space/>
     </TableRow>
 
-    <TableRow android:gravity="center">
+    <TableRow android:gravity="center"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:layout_marginTop="15dp"
+              android:layout_marginBottom="25dp">
 
         <CheckBox
             android:id="@+id/checkboxOP"
@@ -214,13 +224,13 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_span="10"
-            android:paddingBottom="25dp"
-            android:paddingTop="25dp"
             android:text="OP"/>
 
     </TableRow>
 
-    <TableRow android:gravity="center">
+    <TableRow
+        android:gravity="center"
+        android:layout_marginBottom="10dp">
 
         <Space/>
 
@@ -284,7 +294,9 @@
 
     </TableRow>
 
-    <TableRow android:gravity="center">
+    <TableRow
+        android:gravity="center"
+        android:layout_marginBottom="10dp">
 
         <TextView
             android:layout_width="wrap_content"
@@ -365,7 +377,9 @@
 
     </TableRow>
 
-    <TableRow android:gravity="center">
+    <TableRow
+        android:gravity="center"
+        android:layout_marginBottom="10dp">
 
         <TextView
             android:id="@+id/textView2"
@@ -449,7 +463,9 @@
             android:text=" (0)"/>
     </TableRow>
 
-    <TableRow android:gravity="center">
+    <TableRow
+        android:gravity="center"
+        android:layout_marginBottom="10dp">
 
         <TextView
             android:layout_width="wrap_content"
@@ -532,7 +548,8 @@
             android:text=" (0)"/>
     </TableRow>
 
-    <TableRow android:gravity="center">
+    <TableRow
+        android:gravity="center">
 
         <TextView
             android:layout_width="wrap_content"
