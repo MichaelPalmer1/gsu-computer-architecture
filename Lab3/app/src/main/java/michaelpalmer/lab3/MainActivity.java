@@ -16,8 +16,6 @@ public class MainActivity extends Activity implements View.OnClickListener {
     private CheckBox checkBoxB0, checkBoxB1, checkBoxB2, checkBoxB3, checkBoxB4, checkBoxB5, checkBoxB6, checkBoxB7;
     private CheckBox checkBoxOP;
 
-    private CheckBox[] checkBoxA, checkBoxB;
-
     private TextView txtA0, txtA1, txtA2, txtA3, txtA4, txtA5, txtA6, txtA7, txtA;
     private TextView txtB0, txtB1, txtB2, txtB3, txtB4, txtB5, txtB6, txtB7, txtB;
     private TextView txtC0, txtC1, txtC2, txtC3, txtC4, txtC5, txtC6, txtC7;
