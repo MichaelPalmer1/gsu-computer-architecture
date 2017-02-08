@@ -6,6 +6,8 @@ import android.view.View;
 import android.widget.CheckBox;
 import android.widget.TextView;
 
+import org.w3c.dom.Text;
+
 import java.util.Locale;
 
 import michaelpalmer.lab3.alu.NBitALU;
@@ -20,6 +22,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
     private TextView txtB0, txtB1, txtB2, txtB3, txtB4, txtB5, txtB6, txtB7, txtB;
     private TextView txtC0, txtC1, txtC2, txtC3, txtC4, txtC5, txtC6, txtC7;
     private TextView txtS0, txtS1, txtS2, txtS3, txtS4, txtS5, txtS6, txtS7, txtS;
+    private TextView txtOverflow;
 
     private NBitALU alu = new NBitALU(8);
 
@@ -86,6 +89,8 @@ public class MainActivity extends Activity implements View.OnClickListener {
         txtS6 = (TextView) findViewById(R.id.txtS6);
         txtS7 = (TextView) findViewById(R.id.txtS7);
         txtS = (TextView) findViewById(R.id.txtS);
+
+        txtOverflow = (TextView) findViewById(R.id.txtOverflow);
 
         checkBoxA0.setOnClickListener(this);
         checkBoxA1.setOnClickListener(this);
@@ -202,5 +207,6 @@ public class MainActivity extends Activity implements View.OnClickListener {
         txtA.setText(String.format(Locale.US, " (%4s)", alu.getA()));
         txtB.setText(String.format(Locale.US, " (%4s)", alu.getB()));
         txtS.setText(String.format(Locale.US, " (%4s)", alu.getSum()));
+        txtOverflow.setText(alu.getOverflow() ? "1": "0");
     }
 }

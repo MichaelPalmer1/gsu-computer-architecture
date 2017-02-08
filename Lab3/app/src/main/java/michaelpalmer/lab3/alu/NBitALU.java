@@ -86,6 +86,10 @@ public class NBitALU {
         return carry[bit];
     }
 
+    public boolean getOverflow() {
+        return overflow;
+    }
+
     public void getEquation() {
         System.out.printf("Equation: %d + %d = %d\n", getA(), getB(), getSum());
     }

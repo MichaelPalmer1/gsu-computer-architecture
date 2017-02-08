@@ -11,7 +11,7 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="michaelpalmer.lab3.MainActivity">
 
-    <TableRow android:gravity="center_horizontal">
+    <TableRow android:gravity="center">
 
         <TextView
             android:layout_width="wrap_content"
@@ -23,7 +23,7 @@
 
     </TableRow>
 
-    <TableRow android:gravity="center_horizontal">
+    <TableRow android:gravity="center">
 
         <TextView
             android:layout_width="wrap_content"
@@ -35,7 +35,7 @@
 
     </TableRow>
 
-    <TableRow android:gravity="center_horizontal">
+    <TableRow android:gravity="center">
 
         <Space/>
 
@@ -99,7 +99,7 @@
 
     </TableRow>
 
-    <TableRow android:gravity="center_horizontal">
+    <TableRow android:gravity="center">
 
         <TextView
             android:layout_width="wrap_content"
@@ -152,7 +152,7 @@
         <Space/>
     </TableRow>
 
-    <TableRow android:gravity="center_horizontal">
+    <TableRow android:gravity="center">
 
         <TextView
             android:layout_width="wrap_content"
@@ -205,7 +205,7 @@
         <Space/>
     </TableRow>
 
-    <TableRow android:gravity="center_horizontal">
+    <TableRow android:gravity="center">
 
         <CheckBox
             android:id="@+id/checkboxOP"
@@ -219,7 +219,7 @@
 
     </TableRow>
 
-    <TableRow android:gravity="center_horizontal">
+    <TableRow android:gravity="center">
 
         <Space/>
 
@@ -283,7 +283,7 @@
 
     </TableRow>
 
-    <TableRow android:gravity="center_horizontal">
+    <TableRow android:gravity="center">
 
         <TextView
             android:layout_width="wrap_content"
@@ -363,7 +363,7 @@
 
     </TableRow>
 
-    <TableRow android:gravity="center_horizontal">
+    <TableRow android:gravity="center">
 
         <TextView
             android:id="@+id/textView2"
@@ -447,7 +447,7 @@
             android:text=" (0)"/>
     </TableRow>
 
-    <TableRow android:gravity="center_horizontal">
+    <TableRow android:gravity="center">
 
         <TextView
             android:layout_width="wrap_content"
@@ -530,10 +530,9 @@
             android:text=" (0)"/>
     </TableRow>
 
-    <TableRow android:gravity="center_horizontal">
+    <TableRow android:gravity="center">
 
         <TextView
-            android:id="@+id/textView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingEnd="5dp"
@@ -612,6 +611,29 @@
             android:gravity="center"
             android:padding="5dp"
             android:text=" (0)"/>
+    </TableRow>
+    
+    <TableRow android:gravity="center">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingEnd="5dp"
+            android:text="Over"
+            android:textAlignment="textEnd"
+            android:textStyle="bold"/>
+        
+        <TextView
+            android:id="@+id/txtOverflow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:padding="5dp"
+            android:text="0"/>
+        
+        <Space
+            android:layout_span="8"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
     </TableRow>
 
 </TableLayout>
