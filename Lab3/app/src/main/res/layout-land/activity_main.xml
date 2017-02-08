@@ -13,31 +13,6 @@
 
     <TableRow android:gravity="center">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_span="10"
-            android:gravity="center"
-            android:text="8-Bit ALU Calculator"
-            android:textStyle="bold"/>
-
-    </TableRow>
-
-    <TableRow
-        android:gravity="center"
-        android:layout_marginBottom="25dp">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_span="10"
-            android:gravity="center"
-            android:text="Michael Palmer"/>
-
-    </TableRow>
-
-    <TableRow android:gravity="center">
-
         <Space/>
 
         <TextView
@@ -214,73 +189,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_span="10"
-            android:paddingBottom="25dp"
-            android:paddingTop="25dp"
             android:text="OP"/>
-
-    </TableRow>
-
-    <TableRow android:gravity="center">
-
-        <Space/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="0"
-            android:textStyle="bold"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="1"
-            android:textStyle="bold"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="2"
-            android:textStyle="bold"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="3"
-            android:textStyle="bold"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="4"
-            android:textStyle="bold"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="5"
-            android:textStyle="bold"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="6"
-            android:textStyle="bold"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="7"
-            android:textStyle="bold"/>
-
-        <Space/>
 
     </TableRow>
 

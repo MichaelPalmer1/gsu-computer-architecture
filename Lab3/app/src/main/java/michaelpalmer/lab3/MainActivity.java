@@ -1,6 +1,7 @@
 package michaelpalmer.lab3;
 
 import android.app.Activity;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.CheckBox;
@@ -22,7 +23,6 @@ public class MainActivity extends Activity implements View.OnClickListener {
     private TextView txtB0, txtB1, txtB2, txtB3, txtB4, txtB5, txtB6, txtB7, txtB;
     private TextView txtC0, txtC1, txtC2, txtC3, txtC4, txtC5, txtC6, txtC7;
     private TextView txtS0, txtS1, txtS2, txtS3, txtS4, txtS5, txtS6, txtS7, txtS;
-    private TextView txtOverflow;
 
     private NBitALU alu = new NBitALU(8);
 
@@ -90,8 +90,6 @@ public class MainActivity extends Activity implements View.OnClickListener {
         txtS7 = (TextView) findViewById(R.id.txtS7);
         txtS = (TextView) findViewById(R.id.txtS);
 
-        txtOverflow = (TextView) findViewById(R.id.txtOverflow);
-
         checkBoxA0.setOnClickListener(this);
         checkBoxA1.setOnClickListener(this);
         checkBoxA2.setOnClickListener(this);
@@ -109,6 +107,33 @@ public class MainActivity extends Activity implements View.OnClickListener {
         checkBoxB6.setOnClickListener(this);
         checkBoxB7.setOnClickListener(this);
         checkBoxOP.setOnClickListener(this);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        txtA0.setText(checkBoxA0.isChecked() ? "1" : "0");
+        txtA1.setText(checkBoxA1.isChecked() ? "1" : "0");
+        txtA2.setText(checkBoxA2.isChecked() ? "1" : "0");
+        txtA3.setText(checkBoxA3.isChecked() ? "1" : "0");
+        txtA4.setText(checkBoxA4.isChecked() ? "1" : "0");
+        txtA5.setText(checkBoxA5.isChecked() ? "1" : "0");
+        txtA6.setText(checkBoxA6.isChecked() ? "1" : "0");
+        txtA7.setText(checkBoxA7.isChecked() ? "1" : "0");
+
+        txtB0.setText(checkBoxB0.isChecked() ? "1" : "0");
+        txtB1.setText(checkBoxB1.isChecked() ? "1" : "0");
+        txtB2.setText(checkBoxB2.isChecked() ? "1" : "0");
+        txtB3.setText(checkBoxB3.isChecked() ? "1" : "0");
+        txtB4.setText(checkBoxB4.isChecked() ? "1" : "0");
+        txtB5.setText(checkBoxB5.isChecked() ? "1" : "0");
+        txtB6.setText(checkBoxB6.isChecked() ? "1" : "0");
+        txtB7.setText(checkBoxB7.isChecked() ? "1" : "0");
+        
+        executeALU();
+        txtA.setText(String.format(Locale.US, " (%4s)", alu.getA()));
+        txtB.setText(String.format(Locale.US, " (%4s)", alu.getB()));
+        txtS.setText(String.format(Locale.US, " (%4s)", alu.getSum()));
     }
 
     private void executeALU() {
@@ -133,6 +158,11 @@ public class MainActivity extends Activity implements View.OnClickListener {
         txtC5.setText(alu.getCarryBit(5) ? "1" : "0");
         txtC6.setText(alu.getCarryBit(6) ? "1" : "0");
         txtC7.setText(alu.getCarryBit(7) ? "1" : "0");
+        if (alu.getCarryBit(0)) {
+            txtC0.setTextColor(Color.RED);
+        } else {
+            txtC0.setTextColor(Color.BLACK);
+        }
     }
 
     @Override
@@ -207,6 +237,5 @@ public class MainActivity extends Activity implements View.OnClickListener {
         txtA.setText(String.format(Locale.US, " (%4s)", alu.getA()));
         txtB.setText(String.format(Locale.US, " (%4s)", alu.getB()));
         txtS.setText(String.format(Locale.US, " (%4s)", alu.getSum()));
-        txtOverflow.setText(alu.getOverflow() ? "1": "0");
     }
 }
