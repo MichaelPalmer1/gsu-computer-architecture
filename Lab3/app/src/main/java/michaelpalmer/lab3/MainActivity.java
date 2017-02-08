@@ -1,13 +1,10 @@
 package michaelpalmer.lab3;
 
 import android.app.Activity;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.TextView;
-
-import org.w3c.dom.Text;
 
 import java.util.Locale;
 
@@ -158,11 +155,6 @@ public class MainActivity extends Activity implements View.OnClickListener {
         txtC5.setText(alu.getCarryBit(5) ? "1" : "0");
         txtC6.setText(alu.getCarryBit(6) ? "1" : "0");
         txtC7.setText(alu.getCarryBit(7) ? "1" : "0");
-        if (alu.getCarryBit(0)) {
-            txtC0.setTextColor(Color.RED);
-        } else {
-            txtC0.setTextColor(Color.BLACK);
-        }
     }
 
     @Override
