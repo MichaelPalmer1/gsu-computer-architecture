@@ -18,7 +18,7 @@
             android:layout_height="wrap_content"
             android:layout_span="10"
             android:gravity="center"
-            android:text="8-Bit ALU Calculator"
+            android:text="8-Bit ALU Calculator (3-Bit Op)"
             android:textStyle="bold"/>
 
     </TableRow>
@@ -221,7 +221,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_span="3"
+            android:layout_span="2"
             android:gravity="end"
             android:text="OP"/>
 
@@ -243,13 +243,12 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"/>
 
-        <TextView
-            android:id="@+id/txtOpCode"
+        <Spinner
+            android:id="@+id/opCode"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/activity_horizontal_margin"
-            android:layout_span="3"
-            android:text="AND"/>
+            android:layout_span="4"/>
 
     </TableRow>
 

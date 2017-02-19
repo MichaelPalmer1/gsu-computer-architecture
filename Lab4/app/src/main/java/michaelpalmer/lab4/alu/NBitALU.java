@@ -164,12 +164,20 @@ public class NBitALU {
         overflow = lastCarry;
     }
 
+    public boolean getA(int index) {
+        return a[index];
+    }
+
     public int getA() {
         double a = 0;
         for (int i = 0; i < numBits; i++) {
             a += (this.a[i] ? Math.pow(2, numBits - i - 1) : 0);
         }
         return (int) a;
+    }
+
+    public boolean getB(int index) {
+        return b[index];
     }
 
     public int getB() {
