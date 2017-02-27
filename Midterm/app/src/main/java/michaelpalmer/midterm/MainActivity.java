@@ -183,6 +183,9 @@ public class MainActivity extends Activity implements View.OnClickListener {
         for (TextView[] rows : cells) {
             for (TextView cell : rows) {
                 if (cell.getId() == v.getId()) {
+                    if (!cell.getText().equals("")) {
+                        return;
+                    }
                     cell.setText(player);
                     break;
                 }
