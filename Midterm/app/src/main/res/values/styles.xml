@@ -5,4 +5,13 @@
         <!-- Customize your theme here. -->
     </style>
 
+    <style name="Cell">
+        <item name="android:layout_width">@dimen/cellSize</item>
+        <item name="android:layout_height">@dimen/cellSize</item>
+        <item name="android:layout_margin">@dimen/cellMargin</item>
+        <item name="android:gravity">center</item>
+        <item name="android:background">@color/cellBackground</item>
+        <item name="android:textSize">20sp</item>
+    </style>
+
 </resources>
