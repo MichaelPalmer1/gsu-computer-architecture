@@ -65,5 +65,17 @@
 
     </TableRow>
 
+    <TableRow
+        android:gravity="center">
+
+        <TextView
+            android:id="@+id/txtGameResult"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_span="3" />
+
+    </TableRow>
+
 
 </TableLayout>

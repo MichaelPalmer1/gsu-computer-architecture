@@ -10,6 +10,7 @@ import android.widget.TextView;
 public class MainActivity extends Activity implements View.OnClickListener {
 
     private TextView[][] cells = new TextView[3][3];
+    private TextView txtGameResult;
     private Button btnNewGame;
     private static final String PLAYER_1 = "X", PLAYER_2 = "O";
     private String player = PLAYER_1;
@@ -21,6 +22,8 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
         btnNewGame = (Button) findViewById(R.id.btnNewGame);
         btnNewGame.setOnClickListener(this);
+
+        txtGameResult = (TextView) findViewById(R.id.txtGameResult);
 
         TextView cellA1 = (TextView) findViewById(R.id.cellA1);
         cells[0][0] = cellA1;
@@ -92,8 +95,9 @@ public class MainActivity extends Activity implements View.OnClickListener {
             }
         }
 
-        if (checkBadGame()) {
+        if (!result && checkBadGame()) {
             result = true;
+            txtGameResult.setText("Tie game");
         }
 
         return result;
@@ -176,6 +180,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
                     player = PLAYER_1;
                 }
             }
+            txtGameResult.setText("");
             return;
         }
 
