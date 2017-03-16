@@ -1,0 +1,8 @@
+### Java template
+*.class
+
+### Maven template
+target/
+
+# IntelliJ
+.idea/
