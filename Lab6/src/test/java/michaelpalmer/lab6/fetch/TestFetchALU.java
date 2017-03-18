@@ -129,4 +129,12 @@ public class TestFetchALU {
         boolean[] expected = {false, true, true, false, false, false, true, false};
         assertArrayEquals(expected, alu.xorOp(a, b, psw));
     }
+
+    @Test
+    public void testShiftLeftInline() {
+        boolean[] initial = {false, false, false, false, true, false, true, false};
+        boolean[] expected = {false, false, false, true, false, true, false, false};
+        alu.shiftLeftInline(initial);
+        assertArrayEquals(expected, initial);
+    }
 }

@@ -286,7 +286,7 @@ public class FetchALU {
         return result;
     }
 
-    private void shiftLeftInline(boolean[] bits) {
+    void shiftLeftInline(boolean[] bits) {
         for (int i = 0; i < bits.length - 1; i++) {
             bits[i] = bits[i + 1];
         }
