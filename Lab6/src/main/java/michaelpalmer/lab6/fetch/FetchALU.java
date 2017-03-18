@@ -214,22 +214,60 @@ public class FetchALU {
      * @param ssss
      * @param dddd
      * @param psw
+     * @return Result
      */
-    public void subOp(boolean[] dddd, boolean[] ssss, FetchPSW psw) {
-        if (dddd.length != fetchWordSize || ssss.length != fetchWordSize) {
-            throw new IndexOutOfBoundsException("Array length must be " + fetchWordSize);
-        }
+    public boolean[] subOp(boolean[] dddd, boolean[] ssss, FetchPSW psw) {
+//        if (dddd.length != fetchWordSize || ssss.length != fetchWordSize) {
+//            throw new IndexOutOfBoundsException("Array length must be " + fetchWordSize);
+//        }
 
-        String a = "", b = "", xVal = "", sum = "", carryVal = "", divider = "";
-        boolean[] carry = new boolean[fetchWordSize], x = new boolean[fetchWordSize];
+//        String a = "", b = "", xVal = "", sum = "", carryVal = "", divider = "";
+//        boolean[] carry = new boolean[fetchWordSize], x = new boolean[fetchWordSize], result = new boolean[fetchWordSize];
 
-        int aVal = booleanToInt(dddd, psw), bVal = booleanToInt(ssss);
-        for (int i = 0; i < fetchWordSize; i++) {
-            a += dddd[i] ? "1" : "0";
-            b += ssss[i] ? "1" : "0";
-        }
+//        int aVal = booleanToInt(dddd, psw), bVal = booleanToInt(ssss);
+//        for (int i = 0; i < fetchWordSize; i++) {
+//            a += dddd[i] ? "1" : "0";
+//            b += ssss[i] ? "1" : "0";
+//        }
 //        psw.setN();
-        int ff = 3 << 2;
+//        psw.setC();
+
+        boolean carryIn = true;
+
+//        this.overflow = false;
+        psw.clearV();
+
+        boolean[] x = new boolean[fetchWordSize];
+        boolean[] carry = new boolean[fetchWordSize];
+        boolean[] result = new boolean[fetchWordSize];
+        for (int i = 0; i < fetchWordSize; i++) {
+            boolean a = dddd[fetchWordSize - i - 1];
+            boolean b = ssss[fetchWordSize - i - 1];
+            XorGate xor = new XorGate();
+            xor.set(b, true);
+            xor.execute();
+            x[fetchWordSize - i - 1] = xor.getOutput();
+
+            FullAdder adder = new FullAdder();
+            adder.set(a, xor.getOutput(), carryIn);
+            adder.execute();
+            result[fetchWordSize - i - 1] = adder.sum;
+            carry[fetchWordSize - i - 1] = adder.carryOut;
+            carryIn = adder.carryOut;
+        }
+
+        carry[fetchWordSize - 1] = true;
+
+        if (carryIn) {
+            psw.setV();
+        } else {
+            psw.clearV();
+        }
+//        overflow = lastCarry;
+
+
+
+        /*
 
         for (int i = 0; i < fetchWordSize; i++) {
             XorGate xor = new XorGate();
@@ -240,7 +278,7 @@ public class FetchALU {
             FullAdder adder = new FullAdder();
             adder.set(dddd[fetchWordSize - i - 1], x[fetchWordSize - i - 1], psw.getC());
             adder.execute();
-            test[fetchWordSize - i - 1] = adder.sum;
+            result[fetchWordSize - i - 1] = adder.sum;
             carry[fetchWordSize - i - 1] = adder.carryOut;
 //            if (adder.carryOut) {
 //                psw.setC();
@@ -252,7 +290,7 @@ public class FetchALU {
         for (int i = 0; i < fetchWordSize; i++) {
             xVal += x[i] ? "1" : "0";
             carryVal += carry[i] ? "1" : "0";
-            sum += test[i] ? "1" : "0";
+            sum += result[i] ? "1" : "0";
             divider += "-";
         }
 
@@ -260,6 +298,7 @@ public class FetchALU {
 //            psw.setV();
 //        }
 
+*/
         /*
         boolean allZero = true;
         for (int i = 0; i < test.length; i++) {
@@ -293,13 +332,15 @@ public class FetchALU {
             psw.clearZ();
         }
         */
-
+/*
         System.out.printf("Carry:    %s\n", carryVal);
         System.out.printf("          %s\n", divider);
         System.out.printf("Input A:  %s   (%03d)\n", a, aVal);
         System.out.printf("Input B:  %s %s (%03d) [%s before XOR]\n", xVal, "-", bVal, b);
         System.out.printf("          %s\n", divider);
-        System.out.printf("Result: %d %s   (%03d)\n\n", psw.getV() ? 1 : 0, sum, booleanToInt(test, psw));
+        System.out.printf("Result: %d %s   (%03d)\n\n", psw.getV() ? 1 : 0, sum, booleanToInt(result, psw));
+*/
+        return result;
     }
 
     /**
@@ -308,18 +349,20 @@ public class FetchALU {
      * @param dddd
      * @param ssss
      * @param psw
+     * @return Result
      */
-    public void mulOp(boolean[] dddd, boolean[] ssss, FetchPSW psw) {
-        if (dddd.length != fetchWordSize || ssss.length != fetchWordSize) {
-            throw new IndexOutOfBoundsException("Array length must be " + fetchWordSize);
-        }
+    public boolean[] mulOp(boolean[] dddd, boolean[] ssss, FetchPSW psw) {
+//        if (dddd.length != fetchWordSize || ssss.length != fetchWordSize) {
+//            throw new IndexOutOfBoundsException("Array length must be " + fetchWordSize);
+//        }
+        boolean[] result = new boolean[fetchWordSize];
 
         AndGate andGate = new AndGate();
         NBitALU alu = new NBitALU(fetchWordSize * 2);
         alu.setA(new boolean[fetchWordSize * 2]);
 
-        System.out.println("DDDD: " + booleanToInt(dddd, psw));
-        System.out.println("SSSS: " + booleanToInt(ssss, psw));
+//        System.out.println("DDDD: " + booleanToInt(dddd, psw));
+//        System.out.println("SSSS: " + booleanToInt(ssss, psw));
 
         for (int i = 0; i < fetchWordSize; i++) {
             boolean[] tmp = new boolean[fetchWordSize * 2];
@@ -330,17 +373,17 @@ public class FetchALU {
                 tmp[index] = andGate.getOutput();
             }
             alu.setB(tmp);
-            alu.execute(false, true, true); // add
+            alu.execute(NBitALU.ADD);
             alu.setA(alu.getSumBits());
-            System.out.println("A: " + alu.getA());
-            System.out.println("B: " + alu.getB());
-            System.out.println("Sum: " + alu.getSum());
-            System.out.println("----------");
+//            System.out.println("A: " + alu.getA());
+//            System.out.println("B: " + alu.getB());
+//            System.out.println("Sum: " + alu.getSum());
+//            System.out.println("----------");
         }
 
         for (int i = 0; i < fetchWordSize * 2; i++) {
             if (i < fetchWordSize) {
-                test[fetchWordSize - i - 1] = alu.getSumBit(fetchWordSize * 2 - i - 1);
+                result[fetchWordSize - i - 1] = alu.getSumBit(fetchWordSize * 2 - i - 1);
             } else {
                 if (alu.getSumBit(fetchWordSize * 2 - i - 1)) {
                     psw.setV();
@@ -349,54 +392,169 @@ public class FetchALU {
             }
         }
 
+        return result;
+    }
+
+    private int firstSignificantBit(boolean[] bits) {
+        int index = 0;
+        for (boolean bit: bits) {
+            if (bit) {
+                return index;
+            }
+            index++;
+        }
+
+        return -1;
+    }
+
+    private boolean[] shiftRight(boolean[] bits) {
+        boolean[] result = new boolean[bits.length];
+        for (int i = 0; i < bits.length - 1; i++) {
+            result[i + 1] = bits[i];
+        }
+        return result;
+    }
+
+    private boolean[] shiftLeft(boolean[] bits) {
+        boolean[] result;
+        if (bits[0]) {
+            result = new boolean[bits.length + 1];
+            for (int i = 0; i < bits.length; i++) {
+                result[i] = bits[i];
+            }
+        } else {
+            result = new boolean[bits.length];
+            for (int i = 0; i < bits.length - 1; i++) {
+                result[i] = bits[i + 1];
+            }
+        }
+        return result;
+    }
+
+    private void shiftLeftInline(boolean[] bits) {
+        for (int i = 0; i < bits.length - 1; i++) {
+            bits[i] = bits[i + 1];
+        }
+        bits[bits.length - 1] = false;
     }
 
     /**
-     * 8-bit DIV SSSS DDDD, put result in DDDD (Set N, C, V in PSW if necessary)
+     * Compare two binary numbers represented in a boolean array.
      *
-     * @param ssss
-     * @param dddd
-     * @param psw
+     * @param a Boolean array
+     * @param b Boolean array
+     * @return  -1 if a > b,
+     *          0 if a == b,
+     *          1 if a < b
      */
-    public void divOp(boolean[] ssss, boolean[] dddd, FetchPSW psw) {
+    private int compare(boolean[] a, boolean[] b) {
+        XorGate xorGate = new XorGate();
+        OrGate orGate = new OrGate();
+
+        // Calculate offsets in the event of differing array lengths
+        int aOffset = Math.max(0, b.length - a.length);
+        int bOffset = Math.max(0, a.length - b.length);
+
+        for (int i = 0; i < Math.max(a.length, b.length); i++) {
+            boolean aVal = false, bVal = false;
+
+            // Get the value of a
+            try {
+                aVal = a[i - aOffset];
+            } catch (ArrayIndexOutOfBoundsException e) {
+                // Defaults to false
+            }
+
+            try {
+                bVal = b[i - bOffset];
+            } catch (ArrayIndexOutOfBoundsException e) {
+                // Defaults to false
+            }
+
+            // Continue looping until a non-matching bit is found
+            xorGate.set(aVal, bVal);
+            xorGate.execute();
+            if (!xorGate.getOutput()) {
+                continue;
+            }
+
+            // Perform comparison
+            orGate.set(aVal, bVal);
+            orGate.execute();
+
+            // Perform XOR to check for equality
+            xorGate.set(orGate.getOutput(), aVal);
+            xorGate.execute();
+            if (!xorGate.getOutput()) {
+                // a > b
+                return -1;
+            } else {
+                // a < b
+                return 1;
+            }
+        }
+
+        // a == b
+        return 0;
+    }
+
+    /**
+     * 8-bit DIV DDDD SSSS, put result in DDDD (Set N, C, V in PSW if necessary)
+     *
+     * @param dddd Dividend
+     * @param ssss Divisor
+     * @param psw PSW
+     * @return Result
+     */
+    public boolean[] divOp(boolean[] dddd, boolean[] ssss, FetchPSW psw) {
         if (dddd.length != fetchWordSize || ssss.length != fetchWordSize) {
             throw new IndexOutOfBoundsException("Array length must be " + fetchWordSize);
         }
+        boolean[] dividend = new boolean[fetchWordSize], quotient = new boolean[fetchWordSize];
+        int index = 0;
 
-        AndGate andGate = new AndGate();
-        NBitALU alu = new NBitALU(fetchWordSize * 2);
-        alu.setA(new boolean[fetchWordSize * 2]);
+        // Initialize the dividend
+        dividend[dividend.length - 1] = dddd[0];
 
-        System.out.println("DDDD: " + booleanToInt(dddd, psw));
-        System.out.println("SSSS: " + booleanToInt(ssss, psw));
+        while (index < dividend.length - 1) {
+            // Check that the divisor is greater than the dividend
+            while (compare(ssss, dividend) < 0) {
+                // Shift dividend
+                shiftLeftInline(dividend);
+                dividend[dividend.length - 1] = dddd[++index];
 
-        for (int i = 0; i < fetchWordSize; i++) {
-            boolean[] tmp = new boolean[fetchWordSize * 2];
-            for (int j = 0; j < fetchWordSize; j++) {
-                int index = fetchWordSize * 2 - j - i - 1;
-                andGate.set(dddd[fetchWordSize - i - 1], ssss[fetchWordSize - j - 1]);
-                andGate.execute();
-                tmp[index] = andGate.getOutput();
+                // Shift quotient
+                shiftLeftInline(quotient);
+                quotient[quotient.length - 1] = false;
             }
-            alu.setB(tmp);
-            alu.execute(true, false, false); // subtract
-            alu.setA(alu.getSumBits());
-            System.out.println("A: " + alu.getA());
-            System.out.println("B: " + alu.getB());
-            System.out.println("Sum: " + alu.getSum());
-            System.out.println("----------");
+
+            // Shift quotient
+            shiftLeftInline(quotient);
+            quotient[quotient.length - 1] = true;
+
+            boolean[] tmp = new boolean[quotient.length];
+            tmp[quotient.length - 1] = true;
+
+            // Multiply by divisor
+            boolean[] mulResult = mulOp(tmp, ssss, psw);
+            dividend = subOp(dividend, mulResult, psw);
+
+            if (index + 1 < dividend.length - 1) {
+                // Shift dividend
+                shiftLeftInline(dividend);
+                dividend[dividend.length - 1] = dddd[++index];
+            }
         }
 
-        for (int i = 0; i < fetchWordSize * 2; i++) {
-            if (i < fetchWordSize) {
-                test[fetchWordSize - i - 1] = alu.getSumBit(fetchWordSize * 2 - i - 1);
-            } else {
-                if (alu.getSumBit(fetchWordSize * 2 - i - 1)) {
-                    psw.setV();
-                    break;
-                }
+        // Set carry flag if there is a remainder
+        for (boolean bit : dividend) {
+            if (bit) {
+                psw.setC();
+                break;
             }
         }
+
+        return quotient;
     }
 
     /**
@@ -549,10 +707,25 @@ public class FetchALU {
     }
 
     public void testALU() {
-        int val;
-        clrOp(test, psw);
-        String s;
-        psw.print();
+        boolean[] d = new boolean[] {false, false, false, true, true, false, true, true};
+        boolean[] s = new boolean[] {false, false, false, false, false, true, false, true};
+
+
+        boolean[] a = new boolean[] {false, false, false, false, false, true, true, false};
+        boolean[] b = new boolean[] {false, false, false, false, false, true, false, true};
+
+        boolean[] r = divOp(d, s, psw);
+        System.out.print("RESULT: ");
+        for (boolean bit: r) {
+            System.out.print(bit ? "1": "0");
+        }
+        System.out.println();
+
+
+//        int val;
+//        clrOp(test, psw);
+//        String s;
+//        psw.print();
 //        System.out.println("incOp()");
 //        for (int i = 0; i < 300; i++) {
 //            incOp(test, psw);
@@ -585,22 +758,22 @@ public class FetchALU {
         psw.print();
         */
 
-        boolean[] a = new boolean[fetchWordSize];
-        boolean[] b = new boolean[fetchWordSize];
-//        for(int i = 0; i < fetchWordSize; i++) {
-//            a[i] = true;
-//            b[i] = true;
+//        boolean[] a = new boolean[fetchWordSize];
+//        boolean[] b = new boolean[fetchWordSize];
+////        for(int i = 0; i < fetchWordSize; i++) {
+////            a[i] = true;
+////            b[i] = true;
+////        }
+//        a[6] = true;
+//        a[6] = true;
+//
+//        divOp(a, b, psw);
+//        System.out.print("test = ");
+//        for(int i = 0; i < test.length; i++) {
+//            System.out.print(test[i] ? 1 : 0);
 //        }
-        a[6] = true;
-        a[6] = true;
-
-        divOp(a, b, psw);
-        System.out.print("test = ");
-        for(int i = 0; i < test.length; i++) {
-            System.out.print(test[i] ? 1 : 0);
-        }
-        System.out.println("\nResult: " + booleanToInt(test, psw));
-        psw.print();
+//        System.out.println("\nResult: " + booleanToInt(test, psw));
+//        psw.print();
 
 //
 //        // TODO: val = nGateCounter();

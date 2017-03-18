@@ -14,6 +14,16 @@ public class NBitALU {
     public static final int OP_AND = 0, OP_OR = 1, OP_XOR = 2, OP_ADD = 3,
             OP_SUB = 4, OP_CLR = 5, OP_SET = 6, OP_NEG = 7;
 
+    public static final boolean[]
+            AND = {false, false, false},
+            OR = {false, false, true},
+            XOR = {false, true, false},
+            ADD = {false, true, true},
+            SUB = {true, false, false},
+            CLR = {true, false, true},
+            SET = {true, true, false},
+            NEG = {true, true, true};
+
     public NBitALU(int numBits) {
         if (numBits <= 0) {
             System.err.println("The number of bits must be a positive number.");
