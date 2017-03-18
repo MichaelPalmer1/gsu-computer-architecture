@@ -6,6 +6,6 @@ public class Main {
 
     public static void main(String[] args) {
         FetchALU alu = new FetchALU();
-        alu.testALU();
+//        alu.testALU();
     }
 }

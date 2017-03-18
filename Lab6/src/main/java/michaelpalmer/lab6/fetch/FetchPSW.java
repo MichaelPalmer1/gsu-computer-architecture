@@ -28,10 +28,10 @@ public class FetchPSW {
     /**
      * Set flags
      *
-     * @param N
-     * @param Z
-     * @param V
-     * @param C
+     * @param N Negative
+     * @param Z Zero
+     * @param V Overflow
+     * @param C Carry
      */
     public void setFlags(boolean N, boolean Z, boolean V, boolean C) {
         this.N = N;
@@ -39,7 +39,6 @@ public class FetchPSW {
         this.V = V;
         this.C = C;
     }
-
 
     /**
      * Enable the N flag
