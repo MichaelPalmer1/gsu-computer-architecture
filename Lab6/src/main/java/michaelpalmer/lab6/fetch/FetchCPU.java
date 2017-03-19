@@ -5,14 +5,15 @@ package michaelpalmer.lab6.fetch;
  */
 public class FetchCPU {
 
-    public FetchRegister r0, r1, r2, r3, pc, sp;
-    public FetchPSW psw;
-    public FetchALU alu;
-    public FetchMem data, prog;
+    FetchRegister r0, r1, r2, r3, pc, sp;
+    FetchPSW psw;
+    FetchALU alu;
+    FetchMem data, prog;
 
     public FetchCPU() {
         alu = new FetchALU();
         data = new FetchMem(); // memory size fixed to 1000 cells
+        prog = new FetchMem();
 
         // create 4 8-bit registers
         r0 = new FetchRegister("r0");
@@ -35,14 +36,6 @@ public class FetchCPU {
         pc.print();
         sp.print();
         psw.print();
-    }
-
-    /**
-     * Construct CPU and perform basic tests
-     */
-    public void testCPU() {
-        print();
-        data.testMem();
     }
 
 }
