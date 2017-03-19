@@ -10,7 +10,7 @@ public class TestOrGate {
     private OrGate gate;
 
     @Before
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         gate = new OrGate();
     }
 

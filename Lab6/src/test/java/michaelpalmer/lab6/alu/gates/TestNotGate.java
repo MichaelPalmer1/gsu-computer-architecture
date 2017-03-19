@@ -15,13 +15,13 @@ public class TestNotGate {
     private final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
     @Before
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         gate = new NotGate();
         System.setOut(new PrintStream(outputStream));
     }
 
     @After
-    protected void tearDown() throws Exception {
+    public void tearDown() throws Exception {
         System.setOut(System.out);
     }
 
@@ -44,7 +44,7 @@ public class TestNotGate {
         gate.set(true);
         gate.execute();
         gate.print();
-        String expected = "NotGate:\nInput: true\nOutput: false\n";
+        String expected = "NotGate:\nInput: (a) true\nOutput: false\n";
         assertEquals(expected, outputStream.toString());
     }
 

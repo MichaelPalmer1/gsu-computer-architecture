@@ -11,68 +11,84 @@ import java.io.PrintStream;
 
 public class TestGate {
 
-    private AndGate gate, gate2;
     private final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+    private Gate gate1, gate2, gate3;
 
     @Before
-    protected void setUp() throws Exception {
-        gate = new AndGate();
-        gate2 = new AndGate();
+    public void setUp() throws Exception {
+        gate1 = new Gate() {
+            @Override
+            public void execute() {
+                output = true;
+            }
+        };
+        gate2 = new Gate() {
+            @Override
+            public void execute() {
+                output = true;
+            }
+        };
+        gate3 = new Gate() {
+            @Override
+            public void execute() {
+                output = false;
+            }
+        };
         System.setOut(new PrintStream(outputStream));
     }
 
     @After
-    protected void tearDown() throws Exception {
+    public void tearDown() throws Exception {
         System.setOut(System.out);
     }
 
     @Test
     public void testGetA() throws Exception {
-        gate.set(true, false);
-        assertTrue(gate.getInput(0));
+        gate1.set(true, false);
+        assertTrue(gate1.getInput(0));
     }
 
     @Test
     public void testGetB() throws Exception {
-        gate.set(true, false);
-        assertFalse(gate.getInput(1));
+        gate1.set(true, false);
+        assertFalse(gate1.getInput(1));
     }
 
     @Test
     public void testEquals() throws Exception {
-        gate.set(true, false);
-        gate.execute();
+        gate1.set(true, false);
+        gate1.execute();
         gate2.set(true, false);
         gate2.execute();
-        assertTrue(gate.equals(gate2));
+        assertTrue(gate1.equals(gate2));
     }
 
     @Test
     public void testNotEquals() throws Exception {
-        gate.set(true, false);
-        gate.execute();
-        gate2.set(false, false);
+        gate2.set(true, false);
         gate2.execute();
-        assertFalse(gate.equals(gate2));
+        gate3.set(false, false);
+        gate3.execute();
+        assertFalse(gate2.equals(gate3));
     }
 
     @Test
     public void testMakeEqual() throws Exception {
-        gate.set(true, true);
-        gate.execute();
-        gate2.set(false, false);
+        gate2.set(true, true);
         gate2.execute();
-        assertFalse(gate.equals(gate2));
-        gate.makeEqual(gate2);
-        assertTrue(gate.equals(gate2));
+        gate3.set(false, false);
+        gate3.execute();
+        assertFalse(gate2.equals(gate3));
+        gate2.makeEqual(gate3);
+        assertTrue(gate2.equals(gate3));
     }
 
     @Test
     public void testPrint() throws Exception {
-        gate.set(true, false);
-        gate.execute();
-        gate.print();
-        String expected = "AndGate:\nInputs: (a) true, (b) false\nOutput: false\n";
+        gate1.set(true, false);
+        gate1.execute();
+        gate1.print();
+        String expected = ":\nInput: (a) true, (b) false\nOutput: true\n";
         assertEquals(expected, outputStream.toString());
     }
 

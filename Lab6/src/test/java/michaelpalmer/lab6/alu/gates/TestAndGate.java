@@ -10,7 +10,7 @@ public class TestAndGate {
     private AndGate gate;
 
     @Before
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         gate = new AndGate();
     }
 

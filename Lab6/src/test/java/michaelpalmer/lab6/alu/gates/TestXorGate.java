@@ -10,7 +10,7 @@ public class TestXorGate {
     private XorGate gate;
 
     @Before
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         gate = new XorGate();
     }
 
