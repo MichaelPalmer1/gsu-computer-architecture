@@ -5,8 +5,8 @@ package michaelpalmer.lab6.fetch;
  */
 public class FetchRegister {
 
-    public int wordSize = 8;
-    protected String name;
+    private int wordSize = 8;
+    private String name;
     private boolean[] v;
 
     /**
