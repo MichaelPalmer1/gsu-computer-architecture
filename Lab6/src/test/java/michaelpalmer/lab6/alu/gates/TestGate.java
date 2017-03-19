@@ -29,13 +29,13 @@ public class TestGate {
     @Test
     public void testGetA() throws Exception {
         gate.set(true, false);
-        assertTrue(gate.getA());
+        assertTrue(gate.getInput(0));
     }
 
     @Test
     public void testGetB() throws Exception {
         gate.set(true, false);
-        assertFalse(gate.getB());
+        assertFalse(gate.getInput(1));
     }
 
     @Test

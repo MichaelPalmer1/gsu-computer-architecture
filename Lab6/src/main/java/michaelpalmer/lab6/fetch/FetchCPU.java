@@ -5,10 +5,10 @@ package michaelpalmer.lab6.fetch;
  */
 public class FetchCPU {
 
-    FetchRegister r0, r1, r2, r3, pc, sp;
-    FetchPSW psw;
-    FetchALU alu;
-    FetchMem data, prog;
+    private FetchRegister r0, r1, r2, r3, pc, sp;
+    private FetchPSW psw;
+    private FetchALU alu;
+    private FetchMem data, prog;
 
     public FetchCPU() {
         alu = new FetchALU();
@@ -26,6 +26,46 @@ public class FetchCPU {
 
         // create 4-bit PSW
         psw = new FetchPSW();
+    }
+
+    public FetchALU getAlu() {
+        return alu;
+    }
+
+    public FetchPSW getPsw() {
+        return psw;
+    }
+
+    public FetchMem getData() {
+        return data;
+    }
+
+    public FetchMem getProg() {
+        return prog;
+    }
+
+    public FetchRegister getR0() {
+        return r0;
+    }
+
+    public FetchRegister getR1() {
+        return r1;
+    }
+
+    public FetchRegister getR2() {
+        return r2;
+    }
+
+    public FetchRegister getR3() {
+        return r3;
+    }
+
+    public FetchRegister getPc() {
+        return pc;
+    }
+
+    public FetchRegister getSp() {
+        return sp;
     }
 
     public void print() {

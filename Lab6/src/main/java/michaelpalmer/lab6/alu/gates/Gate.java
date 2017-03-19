@@ -1,40 +1,59 @@
 package michaelpalmer.lab6.alu.gates;
 
-abstract class Gate {
-    boolean inputA, inputB, output;
+public abstract class Gate {
+    protected boolean output;
+    private boolean[] input;
 
-    public void set(boolean a, boolean b) {
-        this.inputA = a;
-        this.inputB = b;
+    public void set(boolean... input) {
+        this.input = input;
     }
 
-    public boolean getA() {
-        return this.inputA;
+    public boolean getInput(int index) {
+        return input[index];
     }
 
-    public boolean getB() {
-        return this.inputB;
+    public boolean[] getInputs() {
+        return input;
     }
 
     public boolean getOutput() {
-        return this.output;
+        return output;
     }
 
     public boolean equals(Gate gate) {
-        return this.inputA == gate.inputA && this.inputB == gate.inputB && this.output == gate.output;
+        boolean[] gateInputs = gate.getInputs();
+
+        if (getInputs().length != gateInputs.length) {
+            return false;
+        }
+
+        if (getOutput() != gate.getOutput()) {
+            return false;
+        }
+
+        for (int i = 0; i < gateInputs.length; i++) {
+            if (gateInputs[i] != getInput(i)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     public void makeEqual(Gate gate) {
-        this.inputA = gate.inputA;
-        this.inputB = gate.inputB;
-        this.output = gate.output;
+        input = gate.getInputs();
+        output = gate.output;
     }
 
     public abstract void execute();
 
     public void print() {
-        System.out.println(this.getClass().getSimpleName() + ":");
-        System.out.printf("Inputs: (a) %b, (b) %b\n", this.inputA, this.inputB);
-        System.out.printf("Output: %b\n", this.output);
+        char c = 'a';
+        System.out.println(getClass().getSimpleName() + ":");
+        for (int i = 0; i < getInputs().length; i++) {
+            System.out.printf("%s(%c) %b", i == 0 ? "Input: " : ", ", c++, getInput(i));
+        }
+        System.out.println();
+        System.out.printf("Output: %b\n", output);
     }
 }

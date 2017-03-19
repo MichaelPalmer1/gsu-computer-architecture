@@ -1,7 +1,11 @@
 package michaelpalmer.lab6.fetch;
 
+import com.sun.javaws.exceptions.InvalidArgumentException;
+import michaelpalmer.lab6.alu.gates.AndGate;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.security.InvalidParameterException;
 
 import static org.junit.Assert.*;
 
@@ -17,17 +21,48 @@ public class TestFetchALU {
     }
 
     @Test
+    public void testGateOperation() {
+        boolean[] a = {false, false, false, true, false, true, false, true};
+        boolean[] b = {true, true, false, true, true, true, false, false};
+        boolean[] expected = {false, false, false, true, false, true, false, false};
+        alu.gateOperation(new AndGate(), a, b);
+        assertArrayEquals(expected, b);
+    }
+
+    @Test
+    public void testGateOperationBadLength() {
+        try {
+            alu.gateOperation(new AndGate(), new boolean[] {false}, new boolean[] {true});
+        } catch (IndexOutOfBoundsException e) {
+            return;
+        }
+        fail("IndexOutOfBoundsException was not thrown");
+    }
+
+    @Test
+    public void testGateOperationMissingOperandParameter() {
+        try {
+            alu.gateOperation(new AndGate());
+        } catch (InvalidParameterException e) {
+            return;
+        }
+        fail("InvalidParameterException was not thrown");
+    }
+
+    @Test
     public void testIncOp() {
         boolean[] initial = {false, false, false, false, false, false, false, false};
         boolean[] expected = {false, false, false, false, false, false, false, true};
-        assertArrayEquals(expected, alu.incOp(initial, psw));
+        alu.incOp(initial, psw);
+        assertArrayEquals(expected, initial);
     }
 
     @Test
     public void testDecOp() {
         boolean[] initial = {false, false, false, false, false, false, false, true};
         boolean[] expected = {false, false, false, false, false, false, false, false};
-        assertArrayEquals(expected, alu.decOp(initial, psw));
+        alu.decOp(initial, psw);
+        assertArrayEquals(expected, initial);
     }
 
     @Test
@@ -35,7 +70,8 @@ public class TestFetchALU {
         boolean[] a = {false, false, false, false, false, false, true, true}; // 3
         boolean[] b = {false, false, false, false, false, true, false, false}; // 4
         boolean[] expected = {false, false, false, false, false, true, true, true}; // 7
-        assertArrayEquals(expected, alu.addOp(a, b, psw));
+        alu.addOp(a, b, psw);
+        assertArrayEquals(expected, b);
     }
 
     @Test
@@ -43,7 +79,8 @@ public class TestFetchALU {
         boolean[] a = {false, false, false, false, false, true, true, true}; // 7
         boolean[] b = {false, false, false, false, false, true, false, false}; // 4
         boolean[] expected = {false, false, false, false, false, false, true, true}; // 3
-        assertArrayEquals(expected, alu.subOp(a, b, psw));
+        alu.subOp(a, b, psw);
+        assertArrayEquals(expected, b);
     }
 
     @Test
@@ -51,7 +88,8 @@ public class TestFetchALU {
         boolean[] a = {false, false, false, false, false, true, true, true}; // 7
         boolean[] b = {false, false, false, false, true, false, true, false}; // 10
         boolean[] expected = {true, true, true, true, true, true, false, true}; // -3
-        assertArrayEquals(expected, alu.subOp(a, b, psw));
+        alu.subOp(a, b, psw);
+        assertArrayEquals(expected, b);
     }
 
     @Test
@@ -59,7 +97,8 @@ public class TestFetchALU {
         boolean[] a = {false, false, false, false, false, true, false, true}; // 5
         boolean[] b = {false, false, false, false, false, false, true, true}; // 3
         boolean[] expected = {false, false, false, false, true, true, true, true}; // 15
-        assertArrayEquals(expected, alu.mulOp(a, b, psw));
+        alu.mulOp(a, b, psw);
+        assertArrayEquals(expected, b);
     }
 
     @Test
@@ -67,7 +106,8 @@ public class TestFetchALU {
         boolean[] a = {false, false, false, false, true, false, true, false}; // 10
         boolean[] b = {false, false, false, false, false, false, true, false}; // 2
         boolean[] expected = {false, false, false, false, false, true, false, true}; // 5
-        assertArrayEquals(expected, alu.divOp(a, b, psw));
+        alu.divOp(a, b, psw);
+        assertArrayEquals(expected, b);
     }
 
     @Test
@@ -100,9 +140,9 @@ public class TestFetchALU {
 
     @Test
     public void testMovOp() {
-        boolean[] dddd = {false, false, false, false, true, false, true, false};
-        boolean[] ssss = {false, true, true, false, true, false, false, false};
-        alu.movOp(dddd, ssss, psw);
+        boolean[] ssss = {false, false, false, false, true, false, true, false};
+        boolean[] dddd = {false, true, true, false, true, false, false, false};
+        alu.movOp(ssss, dddd, psw);
         assertArrayEquals(ssss, dddd);
     }
 
@@ -111,7 +151,8 @@ public class TestFetchALU {
         boolean[] a = {false, false, true, false, true, false, true, false};
         boolean[] b = {false, true, true, false, true, false, false, true};
         boolean[] expected = {false, false, true, false, true, false, false, false};
-        assertArrayEquals(expected, alu.andOp(a, b, psw));
+        alu.andOp(a, b, psw);
+        assertArrayEquals(expected, b);
     }
 
     @Test
@@ -119,7 +160,8 @@ public class TestFetchALU {
         boolean[] a = {false, false, false, false, true, false, true, false};
         boolean[] b = {false, true, true, false, true, false, false, false};
         boolean[] expected = {false, true, true, false, true, false, true, false};
-        assertArrayEquals(expected, alu.orOp(a, b, psw));
+        alu.orOp(a, b, psw);
+        assertArrayEquals(expected, b);
     }
 
     @Test
@@ -127,14 +169,23 @@ public class TestFetchALU {
         boolean[] a = {false, false, false, false, true, false, true, false};
         boolean[] b = {false, true, true, false, true, false, false, false};
         boolean[] expected = {false, true, true, false, false, false, true, false};
-        assertArrayEquals(expected, alu.xorOp(a, b, psw));
+        alu.xorOp(a, b, psw);
+        assertArrayEquals(expected, b);
     }
 
     @Test
-    public void testShiftLeftInline() {
+    public void testShiftLeft() {
         boolean[] initial = {false, false, false, false, true, false, true, false};
         boolean[] expected = {false, false, false, true, false, true, false, false};
-        alu.shiftLeftInline(initial);
+        alu.shiftLeft(initial);
+        assertArrayEquals(expected, initial);
+    }
+
+    @Test
+    public void testShiftRight() {
+        boolean[] initial = {false, false, false, false, true, false, true, false};
+        boolean[] expected = {false, false, false, false, false, true, false, true};
+        alu.shiftRight(initial);
         assertArrayEquals(expected, initial);
     }
 
