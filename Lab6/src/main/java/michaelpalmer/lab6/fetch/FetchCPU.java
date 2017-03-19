@@ -10,6 +10,24 @@ public class FetchCPU {
     private FetchALU alu;
     private FetchMem data, prog;
 
+    public static final boolean[]
+            OP_AND = {false, false, false, false},
+            OP_OR = {false, false, false, true},
+            OP_XOR = {false, false, true, false},
+            OP_ADD = {false, false, true, true},
+            OP_SUB = {false, true, false, false},
+            OP_MUL = {false, true, false, true},
+            OP_DIV = {false, true, true, false},
+            OP_MOV = {false, true, true, true},
+            OP_CLR = {true, false, false, false},
+            OP_SET = {true, false, false, true},
+            OP_INC = {true, false, true, false},
+            OP_DEC = {true, false, true, true},
+            OP_NEG = {true, true, false, false},
+            OP_BNE = {true, true, false, true},
+            OP_BEQ = {true, true, true, false},
+            OP_HLT = {true, true, true, true};
+
     public FetchCPU() {
         alu = new FetchALU();
         data = new FetchMem(); // memory size fixed to 1000 cells
