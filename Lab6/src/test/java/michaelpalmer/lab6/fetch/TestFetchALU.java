@@ -137,4 +137,14 @@ public class TestFetchALU {
         alu.shiftLeftInline(initial);
         assertArrayEquals(expected, initial);
     }
+
+    @Test
+    public void testCompare() {
+        boolean[] a = {false, false, false, false, false, true, false, true};
+        boolean[] b = {false, false, false, false, false, false, true, true};
+        boolean[] c = {false, false, false, false, false, false, true, true};
+        assertEquals(-1, alu.compare(a, b));
+        assertEquals(1, alu.compare(b, a));
+        assertEquals(0, alu.compare(b, c));
+    }
 }

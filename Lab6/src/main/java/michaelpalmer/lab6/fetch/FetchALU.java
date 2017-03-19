@@ -302,7 +302,7 @@ public class FetchALU {
      *          0 if a == b,
      *          1 if a < b
      */
-    private int compare(boolean[] a, boolean[] b) {
+    protected int compare(boolean[] a, boolean[] b) {
         XorGate xorGate = new XorGate();
         OrGate orGate = new OrGate();
 
