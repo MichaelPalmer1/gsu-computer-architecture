@@ -38,25 +38,4 @@ public class HalfAdder {
         System.out.printf("Output: (sum) %b, (carry) %b\n", sum, carry);
     }
 
-    public void test() {
-        set(false, false);
-        execute();
-        print();
-        System.out.printf("Correct: %b\n\n", !sum && !carry);
-
-        set(false, true);
-        execute();
-        print();
-        System.out.printf("Correct: %b\n\n", sum && !carry);
-
-        set(true, false);
-        execute();
-        print();
-        System.out.printf("Correct: %b\n\n", sum && !carry);
-
-        set(true, true);
-        execute();
-        print();
-        System.out.printf("Correct: %b\n\n", !sum && carry);
-    }
 }

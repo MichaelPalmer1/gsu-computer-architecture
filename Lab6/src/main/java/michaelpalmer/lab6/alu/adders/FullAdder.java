@@ -42,45 +42,4 @@ public class FullAdder {
         System.out.printf("Output: (sum) %b, (cOut) %b\n\n", sum, carryOut);
     }
 
-    public void test() {
-        set(false, false, false);
-        execute();
-        print();
-        System.out.printf("Correct: %b\n\n", !sum && !carryOut);
-
-        set(false, false, true);
-        execute();
-        print();
-        System.out.printf("Correct: %b\n\n", sum && !carryOut);
-
-        set(false, true, false);
-        execute();
-        print();
-        System.out.printf("Correct: %b\n\n", sum && !carryOut);
-
-        set(false, true, true);
-        execute();
-        print();
-        System.out.printf("Correct: %b\n\n", !sum && carryOut);
-
-        set(true, false, false);
-        execute();
-        print();
-        System.out.printf("Correct: %b\n\n", sum && !carryOut);
-
-        set(true, false, true);
-        execute();
-        print();
-        System.out.printf("Correct: %b\n\n", !sum && carryOut);
-
-        set(true, true, false);
-        execute();
-        print();
-        System.out.printf("Correct: %b\n\n", !sum && carryOut);
-
-        set(true, true, true);
-        execute();
-        print();
-        System.out.printf("Correct: %b\n\n", sum && carryOut);
-    }
 }

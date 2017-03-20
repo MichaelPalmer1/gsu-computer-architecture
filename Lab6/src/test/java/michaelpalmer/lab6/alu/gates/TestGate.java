@@ -15,7 +15,7 @@ public class TestGate {
     private Gate gate1, gate2, gate3;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         gate1 = new Gate() {
             @Override
             public void execute() {
@@ -38,24 +38,24 @@ public class TestGate {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         System.setOut(System.out);
     }
 
     @Test
-    public void testGetA() throws Exception {
+    public void testGetA() {
         gate1.set(true, false);
         assertTrue(gate1.getInput(0));
     }
 
     @Test
-    public void testGetB() throws Exception {
+    public void testGetB() {
         gate1.set(true, false);
         assertFalse(gate1.getInput(1));
     }
 
     @Test
-    public void testEquals() throws Exception {
+    public void testEquals() {
         gate1.set(true, false);
         gate1.execute();
         gate2.set(true, false);
@@ -64,7 +64,25 @@ public class TestGate {
     }
 
     @Test
-    public void testNotEquals() throws Exception {
+    public void testEqualsBadLength() {
+        gate1.set(true, false);
+        gate1.execute();
+        gate2.set(true, false, true);
+        gate2.execute();
+        assertFalse(gate1.equals(gate2));
+    }
+
+    @Test
+    public void testEqualsBadInputs() {
+        gate1.set(true);
+        gate1.execute();
+        gate2.set(false);
+        gate2.execute();
+        assertFalse(gate1.equals(gate2));
+    }
+
+    @Test
+    public void testNotEquals() {
         gate2.set(true, false);
         gate2.execute();
         gate3.set(false, false);
@@ -73,7 +91,7 @@ public class TestGate {
     }
 
     @Test
-    public void testMakeEqual() throws Exception {
+    public void testMakeEqual() {
         gate2.set(true, true);
         gate2.execute();
         gate3.set(false, false);
@@ -84,7 +102,7 @@ public class TestGate {
     }
 
     @Test
-    public void testPrint() throws Exception {
+    public void testPrint() {
         gate1.set(true, false);
         gate1.execute();
         gate1.print();
