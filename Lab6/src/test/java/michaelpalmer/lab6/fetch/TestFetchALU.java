@@ -1,6 +1,5 @@
 package michaelpalmer.lab6.fetch;
 
-import com.sun.javaws.exceptions.InvalidArgumentException;
 import michaelpalmer.lab6.alu.gates.AndGate;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,6 +26,51 @@ public class TestFetchALU {
         boolean[] expected = {false, false, false, true, false, true, false, false};
         alu.gateOperation(new AndGate(), a, b);
         assertArrayEquals(expected, b);
+    }
+
+    @Test
+    public void testValidateLength() {
+        try {
+            boolean[] a = {false, false, false, false, false, false, false, false};
+            boolean[] b = {false, false, false, false, false, false, false, false};
+            alu.validateLength(a, b);
+        } catch (InvalidParameterException e) {
+            fail("InvalidParameterException was thrown");
+        } catch (IndexOutOfBoundsException e) {
+            fail("IndexOutOfBoundsException was thrown");
+        }
+    }
+
+    @Test
+    public void testValidateLengthMissingParameter() {
+        try {
+            alu.validateLength();
+        } catch (InvalidParameterException e) {
+            return;
+        }
+        fail("InvalidParameterException was not thrown");
+    }
+
+    @Test
+    public void testValidateLengthBadLength() {
+        try {
+            boolean[] a = {false, false}, b = {true, false};
+            alu.validateLength(a, b);
+        } catch (IndexOutOfBoundsException e) {
+            return;
+        }
+        fail("IndexOutOfBoundsException was not thrown");
+    }
+
+    @Test
+    public void testValidateLengthBadLengthSecondParam() {
+        try {
+            boolean[] a = {false, false, false, false, false, false, false, false}, b = {true, false};
+            alu.validateLength(a, b);
+        } catch (IndexOutOfBoundsException e) {
+            return;
+        }
+        fail("IndexOutOfBoundsException was not thrown");
     }
 
     @Test

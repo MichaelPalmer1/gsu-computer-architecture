@@ -86,14 +86,4 @@ public class FetchCPU {
         return sp;
     }
 
-    public void print() {
-        r0.print();
-        r1.print();
-        r2.print();
-        r3.print();
-        pc.print();
-        sp.print();
-        psw.print();
-    }
-
 }
