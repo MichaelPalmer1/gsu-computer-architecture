@@ -11,13 +11,13 @@ public class TestNBitALU {
     private boolean[][] operations;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         this.alu = new NBitALU(4);
         this.operations = this.alu.generateOperations();
     }
 
     @Test
-    public void testGenerateOperations() throws Exception {
+    public void testGenerateOperations() {
         this.alu = new NBitALU(4);
         this.operations = this.alu.generateOperations();
         boolean[][] operations = {
@@ -44,9 +44,19 @@ public class TestNBitALU {
             }
         }
     }
+    
+    @Test
+    public void testGetCarryBit() {
+        assertFalse(alu.getCarryBit(0));
+    }
 
     @Test
-    public void testOpAND() throws Exception {
+    public void testGetOverflow() {
+        assertFalse(alu.getOverflow());
+    }
+
+    @Test
+    public void testOpAND() {
         for (boolean[] operationA : operations) {
             alu.setA(operationA);
             for (boolean[] operationB : operations) {
@@ -60,7 +70,7 @@ public class TestNBitALU {
     }
 
     @Test
-    public void testOpOR() throws Exception {
+    public void testOpOR() {
         for (boolean[] operationA : operations) {
             alu.setA(operationA);
             for (boolean[] operationB : operations) {
@@ -74,7 +84,7 @@ public class TestNBitALU {
     }
 
     @Test
-    public void testOpXOR() throws Exception {
+    public void testOpXOR() {
         for (boolean[] operationA : operations) {
             alu.setA(operationA);
             for (boolean[] operationB : operations) {
@@ -88,7 +98,7 @@ public class TestNBitALU {
     }
 
     @Test
-    public void testOpSET() throws Exception {
+    public void testOpSET() {
         for (boolean[] operationA : operations) {
             alu.setA(operationA);
             for (boolean[] operationB : operations) {
@@ -103,7 +113,7 @@ public class TestNBitALU {
     }
 
     @Test
-    public void testOpCLR() throws Exception {
+    public void testOpCLR() {
         for (boolean[] operationA : operations) {
             alu.setA(operationA);
             for (boolean[] operationB : operations) {
@@ -118,7 +128,7 @@ public class TestNBitALU {
     }
 
     @Test
-    public void testOpNEG() throws Exception {
+    public void testOpNEG() {
         alu.setA(false, true, false, true);
         alu.setB(false, false, true, true);
         assertEquals(5, alu.getA());
@@ -131,7 +141,7 @@ public class TestNBitALU {
     }
 
     @Test
-    public void testOpADD() throws Exception {
+    public void testOpADD() {
         for (boolean[] operationA : operations) {
             alu.setA(operationA);
             for (boolean[] operationB : operations) {
@@ -145,7 +155,7 @@ public class TestNBitALU {
     }
 
     @Test
-    public void testOpSUB() throws Exception {
+    public void testOpSUB() {
         for (boolean[] operationA : operations) {
             alu.setA(operationA);
             for (boolean[] operationB : operations) {
