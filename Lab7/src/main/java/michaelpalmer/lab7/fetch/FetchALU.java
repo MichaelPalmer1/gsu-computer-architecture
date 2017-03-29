@@ -5,6 +5,9 @@ import michaelpalmer.lab7.alu.adders.FullAdder;
 import michaelpalmer.lab7.alu.gates.*;
 
 import java.security.InvalidParameterException;
+import java.util.Arrays;
+
+import static michaelpalmer.lab7.fetch.FetchCPU.*;
 
 /**
  * Fetch ALU
@@ -81,6 +84,48 @@ public class FetchALU {
 
             // Update last operand with result
             operands[operands.length - 1][index] = gate.getOutput();
+        }
+    }
+
+    public void execute(boolean[] code, boolean[] dddd, FetchPSW psw) {
+        execute(code, new boolean[dddd.length], dddd, psw);
+    }
+
+    public void execute(boolean[] code, boolean[] ssss, boolean[] dddd, FetchPSW psw) {
+        if (Arrays.equals(code, OP_AND)) {
+            andOp(ssss, dddd, psw);
+        } else if (Arrays.equals(code, OP_OR)) {
+            orOp(ssss, dddd, psw);
+        } else if (Arrays.equals(code, OP_XOR)) {
+            xorOp(ssss, dddd, psw);
+        } else if (Arrays.equals(code, OP_ADD)) {
+            addOp(ssss, dddd, psw);
+        } else if (Arrays.equals(code, OP_SUB)) {
+            subOp(ssss, dddd, psw);
+        } else if (Arrays.equals(code, OP_MUL)) {
+            mulOp(ssss, dddd, psw);
+        } else if (Arrays.equals(code, OP_DIV)) {
+            divOp(ssss, dddd, psw);
+        } else if (Arrays.equals(code, OP_MOV)) {
+            movOp(ssss, dddd, psw);
+        } else if (Arrays.equals(code, OP_CLR)) {
+            clrOp(dddd, psw);
+        } else if (Arrays.equals(code, OP_SET)) {
+            setOp(dddd, psw);
+        } else if (Arrays.equals(code, OP_INC)) {
+            incOp(dddd, psw);
+        } else if (Arrays.equals(code, OP_DEC)) {
+            decOp(dddd, psw);
+        } else if (Arrays.equals(code, OP_NEG)) {
+            negOp(dddd, psw);
+        } else if (Arrays.equals(code, OP_BNE)) {
+            bneOp(dddd, psw);
+        } else if (Arrays.equals(code, OP_BEQ)) {
+            beqOp(dddd, psw);
+        } else if (Arrays.equals(code, OP_HLT)) {
+            hltOp(dddd, psw);
+        } else {
+            throw new InvalidParameterException("Bad operation code");
         }
     }
 
@@ -161,36 +206,14 @@ public class FetchALU {
      */
     public void subOp(boolean[] ssss, boolean[] dddd, FetchPSW psw) {
         validateLength(ssss, dddd);
-
-        boolean carryIn = true;
-//        this.overflow = false;
-        psw.clearV();
-
-        for (int i = 0; i < fetchWordSize; i++) {
-            int index = fetchWordSize - i - 1;
-            boolean a = ssss[index], b = dddd[index];
-
-            // Perform xor operations
-            XorGate xor = new XorGate();
-            xor.set(b, true);
-            xor.execute();
-
-            // Perform full adder operations
-            FullAdder adder = new FullAdder();
-            adder.set(a, xor.getOutput(), carryIn);
-            adder.execute();
-
-            // Save result
-            dddd[index] = adder.sum;
-            carryIn = adder.carryOut;
-        }
-
-        if (carryIn) {
-            psw.setV();
+        negOp(ssss, psw);
+        incOp(ssss, psw);
+        addOp(ssss, dddd, psw);
+        if (dddd[0]) {
+            psw.setN();
         } else {
-            psw.clearV();
+            psw.clearN();
         }
-//        overflow = lastCarry;
     }
 
     /**
@@ -324,51 +347,19 @@ public class FetchALU {
      */
     public void divOp(boolean[] ssss, boolean[] dddd, FetchPSW psw) {
         validateLength(ssss, dddd);
-        boolean[] dividend = new boolean[fetchWordSize], quotient = new boolean[fetchWordSize];
-        int index = 0;
+        boolean[] divisor = ssss.clone(), quotient = new boolean[fetchWordSize];
 
-        // Initialize the dividend
-        dividend[dividend.length - 1] = ssss[0];
-
-        while (index < dividend.length - 1) {
-            // Check that the divisor is greater than the dividend
-            while (compare(dddd, dividend) < 0) {
-                // Shift dividend
-                shiftLeft(dividend);
-                dividend[dividend.length - 1] = ssss[++index];
-
-                // Shift quotient
-                shiftLeft(quotient);
-                quotient[quotient.length - 1] = false;
-            }
-
-            // Shift quotient
-            shiftLeft(quotient);
-            quotient[quotient.length - 1] = true;
-
-            boolean[] tmp = new boolean[quotient.length];
-            tmp[quotient.length - 1] = true;
-
-            // Multiply by divisor
-            mulOp(dddd, tmp, psw);
-            subOp(tmp, dividend, psw);
-
-            if (index + 1 < dividend.length - 1) {
-                // Shift dividend
-                shiftLeft(dividend);
-                dividend[dividend.length - 1] = ssss[++index];
-            }
+        // Recursively add until the divisor is greater than the dividend
+        while (compare(divisor, dddd) > 0) {
+            incOp(quotient, psw);
+            addOp(ssss, divisor, psw);
         }
 
-        // Set carry flag if there is a remainder
-        for (boolean bit : dividend) {
-            if (bit) {
-                psw.setC();
-                break;
-            }
+        // If there is not a remainder, add another to the quotient
+        if (compare(divisor, dddd) == 0) {
+            incOp(quotient, psw);
         }
 
-        // Move quotient to dddd
         movOp(quotient, dddd, psw);
     }
 
@@ -399,8 +390,6 @@ public class FetchALU {
         for (int i = 0; i < dddd.length; i++) {
             dddd[i] = false;
         }
-        psw.setC();
-
         psw.clearV();
         psw.clearN();
         psw.clearZ();
@@ -440,7 +429,9 @@ public class FetchALU {
     public void decOp(boolean[] dddd, FetchPSW psw) {
         boolean[] ssss = new boolean[fetchWordSize];
         ssss[fetchWordSize - 1] = true;
-        subOp(ssss, dddd, psw);
+        negOp(ssss, psw);
+        incOp(ssss, psw);
+        addOp(ssss, dddd, psw);
     }
 
     /**
