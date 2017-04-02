@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Lab8</string>
+    <string name="sensor">Sensor</string>
+    <string name="value">Value</string>
+    <string name="no_sensor">No sensor</string>
+    <string name="unknown">Unknown</string>
+</resources>

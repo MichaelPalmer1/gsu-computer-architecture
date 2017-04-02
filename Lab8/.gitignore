@@ -1,0 +1,19 @@
+### Java template
+*.class
+
+### Maven template
+target/
+
+### IntelliJ
+.idea/
+*.iml
+
+### Mac OS
+.DS_Store
+
+### Android
+.gradle
+/local.properties
+/build
+/captures
+.externalNativeBuild
