@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">Lab9TxtData</string>
+    <string name="read_data">Read data</string>
+    <string name="write_data">Write Data</string>
+    <string name="delete_file">Delete file</string>
+
+    <string-array name="knuth_quotes">
+        <item>By understanding a machine-oriented language, the programmer will tend to use a much more efficient method much closer to reality.</item>
+        <item>An algorithm must be seen to be believed.</item>
+        <item>People who are more than casually interested in computers should have at least some idea of what the underlying hardware is like. Otherwise the programs they write will be pretty weird.</item>
+        <item>Random numbers should not be generated with a method chosen at random</item>
+        <item>The sun comes up just about as often as it goes down, in the long run, but this doesn\'t make its
+            motion random.</item>
+        <item>Any inaccuracies may be explained by the fact that this text was generated with the help of a computer.</item>
+        <item>Trees sprout up just about everywhere in computer science.</item>
+    </string-array>
+
+</resources>
