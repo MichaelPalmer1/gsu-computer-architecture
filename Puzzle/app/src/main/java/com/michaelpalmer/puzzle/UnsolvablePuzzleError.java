@@ -1,8 +1,10 @@
 package com.michaelpalmer.puzzle;
 
-/**
- * Created by michaelpalmer on 4/16/17.
- */
 
-public class UnsolvablePuzzleError {
+public class UnsolvablePuzzleError extends Exception {
+    // """Thrown when a Puzzle cannot be solved in a finite number of steps."""
+
+    UnsolvablePuzzleError(String message) {
+
+    }
 }
