@@ -176,7 +176,7 @@ public class ContainerFragment extends Fragment {
                     return ContainerPortsFragment.newInstance(container);
 
                 case CONTAINER_TAB_SECURITY:
-                    return ContainerPortsFragment.newInstance(container);
+                    return ContainerSecurityFragment.newInstance(container);
 
                 case CONTAINER_TAB_HEALTH_CHECK:
                     return ContainerPortsFragment.newInstance(container);
