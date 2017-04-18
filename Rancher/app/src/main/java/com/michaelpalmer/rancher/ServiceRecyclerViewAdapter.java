@@ -8,7 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.michaelpalmer.rancher.ServiceFragment.OnServiceListFragmentInteractionListener;
+import com.michaelpalmer.rancher.ServicesListFragment.OnServiceListFragmentInteractionListener;
 import com.michaelpalmer.rancher.schema.Service;
 
 import java.util.List;
@@ -34,7 +34,7 @@ public class ServiceRecyclerViewAdapter extends RecyclerView.Adapter<ServiceRecy
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.fragment_service, parent, false);
+                .inflate(R.layout.fragment_service_item, parent, false);
         return new ViewHolder(view);
     }
 

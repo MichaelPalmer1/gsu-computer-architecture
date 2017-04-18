@@ -8,21 +8,21 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.michaelpalmer.rancher.StacksFragment.OnStackListFragmentInteractionListener;
+import com.michaelpalmer.rancher.StacksListFragment.OnStackListFragmentInteractionListener;
 import com.michaelpalmer.rancher.schema.Stack;
 
 import java.util.List;
 
 /**
  * {@link RecyclerView.Adapter} that can display a {@link Stack} and makes a call to the
- * specified {@link StacksFragment.OnStackListFragmentInteractionListener}.
+ * specified {@link StacksListFragment.OnStackListFragmentInteractionListener}.
  * TODO: Replace the implementation with code for your data type.
  */
 public class StackRecyclerViewAdapter extends RecyclerView.Adapter<StackRecyclerViewAdapter.ViewHolder> {
 
     private final Context mContext;
     private final List<Stack> mValues;
-    private final StacksFragment.OnStackListFragmentInteractionListener mListener;
+    private final StacksListFragment.OnStackListFragmentInteractionListener mListener;
 
     public StackRecyclerViewAdapter(Context context, List<Stack> items, OnStackListFragmentInteractionListener
             listener) {
@@ -34,7 +34,7 @@ public class StackRecyclerViewAdapter extends RecyclerView.Adapter<StackRecycler
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.fragment_stack, parent, false);
+                .inflate(R.layout.fragment_stack_item, parent, false);
         return new ViewHolder(view);
     }
 

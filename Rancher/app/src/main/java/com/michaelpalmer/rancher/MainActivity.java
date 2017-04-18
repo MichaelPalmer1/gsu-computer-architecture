@@ -28,10 +28,11 @@ import java.net.PasswordAuthentication;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
-        StacksFragment.OnStackListFragmentInteractionListener,
-        ServiceFragment.OnServiceListFragmentInteractionListener,
-        ContainerFragment.OnContainerListFragmentInteractionListener,
+        StacksListFragment.OnStackListFragmentInteractionListener,
+        ServicesListFragment.OnServiceListFragmentInteractionListener,
+        ContainerListFragment.OnContainerListFragmentInteractionListener,
         LogsFragment.OnLogsFragmentInteractionListener,
+        ContainerFragment.OnContainerFragmentInteractionListener,
         SharedPreferences.OnSharedPreferenceChangeListener {
 
     @Override
@@ -90,7 +91,7 @@ public class MainActivity extends AppCompatActivity
         // Load stacks fragment
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.fragment_layout, new StacksFragment())
+                .replace(R.id.fragment_layout, new StacksListFragment())
                 .addToBackStack(null)
                 .commit();
     }
@@ -135,7 +136,7 @@ public class MainActivity extends AppCompatActivity
         if (id == R.id.nav_stacks) {
             getSupportFragmentManager()
                     .beginTransaction()
-                    .replace(R.id.fragment_layout, new StacksFragment())
+                    .replace(R.id.fragment_layout, new StacksListFragment())
                     .addToBackStack(null)
                     .commit();
         } else if (id == R.id.nav_hosts) {
@@ -150,66 +151,6 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
-    }
-
-    /**
-     * Load services for this stack
-     *
-     * @param item Stack
-     */
-    @Override
-    public void onStackListFragmentInteraction(Stack item) {
-        try {
-            getSupportActionBar().setSubtitle(R.string.action_services);
-        } catch (NullPointerException e) {
-            // Let it go
-        }
-
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.fragment_layout, ServiceFragment.newInstance(item))
-                .addToBackStack(null)
-                .commit();
-    }
-
-    /**
-     * Load containers for this service
-     *
-     * @param item Service
-     */
-    @Override
-    public void onServiceListFragmentInteraction(Service item) {
-        try {
-            getSupportActionBar().setSubtitle(R.string.action_containers);
-        } catch (NullPointerException e) {
-            // Let it go
-        }
-
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.fragment_layout, ContainerFragment.newInstance(item))
-                .addToBackStack(null)
-                .commit();
-    }
-
-    @Override
-    public void onContainerListFragmentInteraction(Container item) {
-//        try {
-//            getSupportActionBar().setSubtitle(R.string.action_logs);
-//        } catch (NullPointerException e) {
-//            // Let it go
-//        }
-//
-//        getSupportFragmentManager()
-//                .beginTransaction()
-//                .replace(R.id.fragment_layout, LogsFragment.newInstance(item))
-//                .addToBackStack(null)
-//                .commit();
-    }
-
-    @Override
-    public void onLogsFragmentInteraction(Uri uri) {
-
     }
 
     @Override
@@ -230,4 +171,68 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    /**
+     * Load services for this stack
+     *
+     * @param item Stack
+     */
+    @Override
+    public void onStackListFragmentInteraction(Stack item) {
+        try {
+            getSupportActionBar().setSubtitle(R.string.action_services);
+        } catch (NullPointerException e) {
+            // Let it go
+        }
+
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.fragment_layout, ServicesListFragment.newInstance(item))
+                .addToBackStack(null)
+                .commit();
+    }
+
+    /**
+     * Load containers for this service
+     *
+     * @param item Service
+     */
+    @Override
+    public void onServiceListFragmentInteraction(Service item) {
+        try {
+            getSupportActionBar().setSubtitle(R.string.action_containers);
+        } catch (NullPointerException e) {
+            // Let it go
+        }
+
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.fragment_layout, ContainerListFragment.newInstance(item))
+                .addToBackStack(null)
+                .commit();
+    }
+
+    @Override
+    public void onContainerListFragmentInteraction(Container item) {
+        try {
+            getSupportActionBar().setSubtitle(item.getName());
+        } catch (NullPointerException e) {
+            // Let it go
+        }
+
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.fragment_layout, ContainerFragment.newInstance(item))
+                .addToBackStack(null)
+                .commit();
+    }
+
+    @Override
+    public void onLogsFragmentInteraction(Uri uri) {
+
+    }
+
+    @Override
+    public void onContainerFragmentInteraction(Uri uri) {
+
+    }
 }

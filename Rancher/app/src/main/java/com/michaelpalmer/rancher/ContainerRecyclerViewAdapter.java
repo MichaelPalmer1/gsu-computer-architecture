@@ -14,16 +14,15 @@ import java.util.List;
 
 /**
  * {@link RecyclerView.Adapter} that can display a {@link Container} and makes a call to the
- * specified {@link ContainerFragment.OnContainerListFragmentInteractionListener}.
- * TODO: Replace the implementation with code for your data type.
+ * specified {@link ContainerListFragment.OnContainerListFragmentInteractionListener}.
  */
 public class ContainerRecyclerViewAdapter extends RecyclerView.Adapter<ContainerRecyclerViewAdapter.ViewHolder> {
 
     private Context mContext;
     private final List<Container> mValues;
-    private final ContainerFragment.OnContainerListFragmentInteractionListener mListener;
+    private final ContainerListFragment.OnContainerListFragmentInteractionListener mListener;
 
-    public ContainerRecyclerViewAdapter(Context context, List<Container> items, ContainerFragment
+    public ContainerRecyclerViewAdapter(Context context, List<Container> items, ContainerListFragment
             .OnContainerListFragmentInteractionListener listener) {
         mContext = context;
         mValues = items;
@@ -33,7 +32,7 @@ public class ContainerRecyclerViewAdapter extends RecyclerView.Adapter<Container
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.fragment_container, parent, false);
+                .inflate(R.layout.fragment_container_item, parent, false);
         return new ViewHolder(view);
     }
 

@@ -1,49 +1,69 @@
-<?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.CardView
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/card_container"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    card_view:cardCornerRadius="2dp"
-    card_view:cardElevation="5dp"
-    card_view:cardUseCompatPadding="true">
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.michaelpalmer.rancher.ContainerFragment">
 
-    <LinearLayout
+    <android.support.design.widget.TabLayout
+        android:id="@+id/container_tabs"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:layout_height="50dp"
+        app:tabMode="scrollable">
 
-        <View
-            android:id="@+id/container_state"
-            android:layout_width="15dp"
-            android:layout_height="match_parent"
-            android:background="@color/colorPrimary"/>
+        <android.support.design.widget.TabItem
+            style="TabItem"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:text="Info"/>
 
-        <LinearLayout
-            android:layout_width="match_parent"
+        <android.support.design.widget.TabItem
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="@dimen/activity_horizontal_margin">
+            android:text="Ports"/>
 
-            <TextView
-                android:id="@+id/container_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:hint="Container Name"
-                android:textAppearance="?attr/textAppearanceListItem"
-                android:textStyle="bold"/>
+        <android.support.design.widget.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Command"/>
 
-            <TextView
-                android:id="@+id/container_description"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:hint="Description of the container"
-                android:textAppearance="?attr/textAppearanceListItem"/>
+        <android.support.design.widget.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Volumes"/>
 
-        </LinearLayout>
+        <android.support.design.widget.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Networking"/>
 
-    </LinearLayout>
+        <android.support.design.widget.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Security"/>
 
-</android.support.v7.widget.CardView>
+        <android.support.design.widget.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Health Check"/>
+
+        <android.support.design.widget.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Labels"/>
+
+        <android.support.design.widget.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Scheduling"/>
+
+    </android.support.design.widget.TabLayout>
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/container_view_pager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+</LinearLayout>

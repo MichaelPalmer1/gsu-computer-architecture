@@ -29,7 +29,7 @@ import java.util.Locale;
  * Activities containing this fragment MUST implement the {@link OnStackListFragmentInteractionListener}
  * interface.
  */
-public class StacksFragment extends Fragment {
+public class StacksListFragment extends Fragment {
 
     private static final String ARG_PROJECT_ID = "project-id";
     private OnStackListFragmentInteractionListener mListener;
@@ -40,11 +40,11 @@ public class StacksFragment extends Fragment {
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
      */
-    public StacksFragment() {
+    public StacksListFragment() {
     }
 
-    public static StacksFragment newInstance(String project) {
-        StacksFragment fragment = new StacksFragment();
+    public static StacksListFragment newInstance(String project) {
+        StacksListFragment fragment = new StacksListFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PROJECT_ID, project);
         fragment.setArguments(args);

@@ -8,5 +8,5 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layoutManager="LinearLayoutManager"
-    tools:context="com.michaelpalmer.rancher.ServiceFragment"
-    tools:listitem="@layout/fragment_service"/>
+    tools:context="com.michaelpalmer.rancher.ServicesListFragment"
+    tools:listitem="@layout/fragment_service_item"/>
