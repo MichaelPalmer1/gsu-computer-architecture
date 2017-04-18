@@ -16,15 +16,14 @@ import java.util.List;
 /**
  * {@link RecyclerView.Adapter} that can display a {@link Service} and makes a call to the
  * specified {@link OnServiceListFragmentInteractionListener}.
- * TODO: Replace the implementation with code for your data type.
  */
-public class ServiceRecyclerViewAdapter extends RecyclerView.Adapter<ServiceRecyclerViewAdapter.ViewHolder> {
+public class ServicesRecyclerViewAdapter extends RecyclerView.Adapter<ServicesRecyclerViewAdapter.ViewHolder> {
 
     private final Context mContext;
     private final List<Service> mValues;
     private final OnServiceListFragmentInteractionListener mListener;
 
-    public ServiceRecyclerViewAdapter(Context context, List<Service> items, OnServiceListFragmentInteractionListener
+    public ServicesRecyclerViewAdapter(Context context, List<Service> items, OnServiceListFragmentInteractionListener
             listener) {
         mContext = context;
         mValues = items;
@@ -41,8 +40,13 @@ public class ServiceRecyclerViewAdapter extends RecyclerView.Adapter<ServiceRecy
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.mItem = mValues.get(position);
-        holder.mNameView.setText(mValues.get(position).getName());
-        holder.mDescriptionView.setText(mValues.get(position).getDescription());
+        holder.mNameView.setText(holder.mItem.getName());
+        if (holder.mItem.getDescription() != null) {
+            holder.mDescriptionView.setText(holder.mItem.getDescription());
+        } else {
+            holder.mDescriptionView.setText(" ");
+        }
+        holder.mScaleView.setText(holder.mItem.getProperty("currentScale").toString());
 
         switch (holder.mItem.getHealthState()) {
             case "healthy":
@@ -78,24 +82,24 @@ public class ServiceRecyclerViewAdapter extends RecyclerView.Adapter<ServiceRecy
         return mValues.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
-        public final View mView;
-        public final View mStateView;
-        public final TextView mNameView;
-        public final TextView mDescriptionView;
-        public Service mItem;
+    class ViewHolder extends RecyclerView.ViewHolder {
+        private final View mView;
+        private final View mStateView;
+        private final TextView mNameView, mDescriptionView, mScaleView;
+        private Service mItem;
 
-        public ViewHolder(View view) {
+        ViewHolder(View view) {
             super(view);
             mView = view;
             mStateView = view.findViewById(R.id.service_state);
             mNameView = (TextView) view.findViewById(R.id.service_name);
             mDescriptionView = (TextView) view.findViewById(R.id.service_description);
+            mScaleView = (TextView) view.findViewById(R.id.service_scale);
         }
 
         @Override
         public String toString() {
-            return super.toString() + " '" + mDescriptionView.getText() + "'";
+            return super.toString() + " '" + mNameView.getText() + "'";
         }
     }
 }

@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-public class Container {
+public class Container extends BaseSchema {
 
     public static List<Container> ITEMS = new ArrayList<>();
     private String id;
@@ -16,12 +16,11 @@ public class Container {
     private String description;
     private String healthState;
     private JSONObject links, actions;
-    private JSONObject _data;
-    private HashMap<String, Object> dataMap = new HashMap<>();
 
 
     public Container(String id, String name, String state, String description, String healthState, JSONObject links,
                      JSONObject actions, JSONObject data) {
+        super(data);
         this.id = id;
         this.name = name;
         this.state = state;
@@ -29,13 +28,6 @@ public class Container {
         this.healthState = healthState;
         this.links = links;
         this.actions = actions;
-        this._data = data;
-
-        Iterator<String> keys = data.keys();
-        while (keys.hasNext()) {
-            String key = keys.next();
-            dataMap.put(key, data.opt(key));
-        }
     }
 
     public String getId() {
@@ -66,15 +58,4 @@ public class Container {
         return actions;
     }
 
-    public JSONObject getData() {
-        return _data;
-    }
-
-    public HashMap<String, Object> getDataMap() {
-        return dataMap;
-    }
-
-    public Object getProperty(String key) {
-        return dataMap.get(key);
-    }
 }

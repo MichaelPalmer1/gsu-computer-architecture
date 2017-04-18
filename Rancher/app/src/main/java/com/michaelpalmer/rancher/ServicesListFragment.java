@@ -40,7 +40,6 @@ public class ServicesListFragment extends Fragment {
     public ServicesListFragment() {
     }
 
-    @SuppressWarnings("unused")
     public static ServicesListFragment newInstance(Stack stack) {
         ServicesListFragment fragment = new ServicesListFragment();
         Bundle args = new Bundle();
@@ -74,7 +73,7 @@ public class ServicesListFragment extends Fragment {
         // Set the adapter
         if (view instanceof RecyclerView) {
             recyclerView = (RecyclerView) view;
-            recyclerView.setAdapter(new ServiceRecyclerViewAdapter(getContext(), Service.ITEMS, mListener));
+            recyclerView.setAdapter(new ServicesRecyclerViewAdapter(getContext(), Service.ITEMS, mListener));
         }
         return view;
     }
@@ -101,13 +100,8 @@ public class ServicesListFragment extends Fragment {
      * fragment to allow an interaction in this fragment to be communicated
      * to the activity and potentially other fragments contained in that
      * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnServiceListFragmentInteractionListener {
-        // TODO: Update argument type and name
         void onServiceListFragmentInteraction(Service item);
     }
 
@@ -129,7 +123,7 @@ public class ServicesListFragment extends Fragment {
         @Override
         protected void onPostExecute(List<Service> items) {
             Service.ITEMS = items;
-            recyclerView.setAdapter(new ServiceRecyclerViewAdapter(getContext(), Service.ITEMS, mListener));
+            recyclerView.setAdapter(new ServicesRecyclerViewAdapter(getContext(), Service.ITEMS, mListener));
         }
 
         private List<Service> fetchItems(String url) {
@@ -150,11 +144,11 @@ public class ServicesListFragment extends Fragment {
                 // Get base object
                 JSONObject jsonBaseObject = new JSONObject(data);
 
-                // Get the stacks
+                // Get the services
                 JSONArray services = jsonBaseObject.getJSONArray("data");
 
                 for (int i = 0; i < services.length(); i++) {
-                    // Get photo object
+                    // Get service object
                     JSONObject service = services.getJSONObject(i);
 
                     // Get relevant data
@@ -165,12 +159,12 @@ public class ServicesListFragment extends Fragment {
                     String healthState = service.getString("healthState");
                     JSONObject links = service.getJSONObject("links");
 
-                    if (description == null) {
-                        description = "";
+                    if (description.equals("null")) {
+                        description = null;
                     }
 
-                    // Instantiate stack and add to list
-                    Service item = new Service(id, name, state, description, healthState, links);
+                    // Instantiate service and add to list
+                    Service item = new Service(id, name, state, description, healthState, links, service);
                     items.add(item);
                 }
             } catch (JSONException e) {

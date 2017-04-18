@@ -5,21 +5,16 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Stack {
+public class Stack extends BaseSchema {
 
     public static List<Stack> ITEMS = new ArrayList<>();
-    private String id;
-    private String name;
-    private String state;
-    private String description;
-    private String group;
-    private String healthState;
-    private ArrayList<String> serviceIds;
+    private String id, name, state, description, group, healthState;
     private JSONObject links, actions;
 
 
     public Stack(String id, String name, String state, String description, String group, String healthState,
-                 JSONObject links, JSONObject actions) {
+                 JSONObject links, JSONObject actions, JSONObject data) {
+        super(data);
         this.id = id;
         this.name = name;
         this.state = state;
@@ -54,19 +49,11 @@ public class Stack {
         return healthState;
     }
 
-    public ArrayList<String> getServiceIds() {
-        return serviceIds;
-    }
-
     public JSONObject getLinks() {
         return links;
     }
 
     public JSONObject getActions() {
         return actions;
-    }
-
-    public void setServiceIds(ArrayList<String> serviceIds) {
-        this.serviceIds = serviceIds;
     }
 }

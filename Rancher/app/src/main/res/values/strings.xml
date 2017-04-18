@@ -18,5 +18,11 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="unknown">Unknown</string>
+    <string name="action_scale">Scale</string>
+    <string name="one">1</string>
+    <string name="service_name">Service Name</string>
+    <string name="service_description">Description of the service</string>
+    <string name="stack_name">Stack Name</string>
+    <string name="description_of_the_stack">Description of the stack</string>
 
 </resources>

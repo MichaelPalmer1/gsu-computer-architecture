@@ -15,14 +15,16 @@
         android:orientation="horizontal">
 
         <View
-            android:layout_width="15dp"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:layout_weight="0.025"
             android:id="@+id/stack_state"
-            android:background="@color/colorPrimary" />
+            android:background="@color/colorActive" />
 
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="0.825"
             android:orientation="vertical"
             android:padding="@dimen/activity_horizontal_margin">
 
@@ -30,7 +32,7 @@
                 android:id="@+id/stack_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:hint="Stack Name"
+                android:hint="@string/stack_name"
                 android:textStyle="bold"
                 android:textAppearance="?attr/textAppearanceListItem"/>
 
@@ -38,8 +40,35 @@
                 android:id="@+id/stack_description"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:hint="Description of the stack"
+                android:hint="@string/description_of_the_stack"
                 android:textAppearance="?attr/textAppearanceListItem"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.15"
+            android:layout_margin="5dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/stack_service_count"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="0.8"
+                android:gravity="center"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:hint="@string/one" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="0.2"
+                android:gravity="center"
+                android:text="@string/action_services"
+                android:textSize="@dimen/label_text_small"
+                android:textAllCaps="true" />
 
         </LinearLayout>
 

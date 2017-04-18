@@ -157,8 +157,8 @@ public class ContainerListFragment extends Fragment {
                     JSONObject links = container.getJSONObject("links");
                     JSONObject actions = container.getJSONObject("actions");
 
-                    if (description == null) {
-                        description = "";
+                    if (description.equals("null")) {
+                        description = null;
                     }
 
                     // Instantiate stack and add to list

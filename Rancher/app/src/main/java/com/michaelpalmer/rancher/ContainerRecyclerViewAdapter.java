@@ -39,8 +39,12 @@ public class ContainerRecyclerViewAdapter extends RecyclerView.Adapter<Container
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.mItem = mValues.get(position);
-        holder.mNameView.setText(mValues.get(position).getName());
-        holder.mDescriptionView.setText(mValues.get(position).getDescription());
+        holder.mNameView.setText(holder.mItem.getName());
+        if (holder.mItem.getDescription() != null) {
+            holder.mDescriptionView.setText(holder.mItem.getDescription());
+        } else {
+            holder.mDescriptionView.setText(" ");
+        }
 
         switch (holder.mItem.getState()) {
             case "running":

@@ -71,7 +71,7 @@ public class StacksListFragment extends Fragment {
             Context context = view.getContext();
             recyclerView = (RecyclerView) view;
             recyclerView.setLayoutManager(new LinearLayoutManager(context));
-            recyclerView.setAdapter(new StackRecyclerViewAdapter(getContext(), Stack.ITEMS, mListener));
+            recyclerView.setAdapter(new StacksRecyclerViewAdapter(getContext(), Stack.ITEMS, mListener));
         }
         return view;
     }
@@ -126,7 +126,7 @@ public class StacksListFragment extends Fragment {
         @Override
         protected void onPostExecute(List<Stack> items) {
             Stack.ITEMS = items;
-            recyclerView.setAdapter(new StackRecyclerViewAdapter(getContext(), Stack.ITEMS, mListener));
+            recyclerView.setAdapter(new StacksRecyclerViewAdapter(getContext(), Stack.ITEMS, mListener));
         }
 
         private List<Stack> fetchItems() {
@@ -161,28 +161,28 @@ public class StacksListFragment extends Fragment {
                 JSONObject jsonBaseObject = new JSONObject(data);
 
                 // Get the stacks
-                JSONArray stacks = jsonBaseObject.getJSONArray("data");
+                JSONArray stacks = jsonBaseObject.optJSONArray("data");
 
                 for (int i = 0; i < stacks.length(); i++) {
-                    // Get photo object
-                    JSONObject stack = stacks.getJSONObject(i);
+                    // Get stack object
+                    JSONObject stack = stacks.optJSONObject(i);
 
                     // Get relevant data
-                    String id = stack.getString("id");
-                    String name = stack.getString("name");
-                    String state = stack.getString("state");
-                    String description = stack.getString("description");
-                    String group = stack.getString("group");
-                    String healthState = stack.getString("healthState");
-                    JSONObject links = stack.getJSONObject("links");
-                    JSONObject actions = stack.getJSONObject("actions");
+                    String id = stack.optString("id");
+                    String name = stack.optString("name");
+                    String state = stack.optString("state");
+                    String description = stack.optString("description");
+                    String group = stack.optString("group");
+                    String healthState = stack.optString("healthState");
+                    JSONObject links = stack.optJSONObject("links");
+                    JSONObject actions = stack.optJSONObject("actions");
 
-                    if (description == null) {
-                        description = "";
+                    if (description.equals("null")) {
+                        description = null;
                     }
 
                     // Instantiate stack and add to list
-                    Stack item = new Stack(id, name, state, description, group, healthState, links, actions);
+                    Stack item = new Stack(id, name, state, description, group, healthState, links, actions, stack);
                     items.add(item);
                 }
             } catch (JSONException e) {
