@@ -1,29 +1,28 @@
-package com.michaelpalmer.rancher;
+package com.michaelpalmer.rancher.container;
 
-import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.michaelpalmer.rancher.R;
 import com.michaelpalmer.rancher.schema.Container;
 
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link OnContainerPortsFragmentInteractionListener} interface
+ * {@link OnContainerVolumesFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link ContainerPortsFragment#newInstance} factory method to
+ * Use the {@link ContainerVolumesFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class ContainerPortsFragment extends Fragment {
+public class ContainerVolumesFragment extends Fragment {
     private static final String ARG_CONTAINER_ID = "container-id";
     private String mContainerId;
-    private OnContainerPortsFragmentInteractionListener mListener;
+    private OnContainerVolumesFragmentInteractionListener mListener;
     private String TAG = getClass().getSimpleName();
 
     /**
@@ -31,10 +30,10 @@ public class ContainerPortsFragment extends Fragment {
      * this fragment using the provided parameters.
      *
      * @param container Container
-     * @return A new instance of fragment ContainerInfoFragment.
+     * @return A new instance of fragment ContainerVolumesFragment.
      */
-    public static ContainerPortsFragment newInstance(Container container) {
-        ContainerPortsFragment fragment = new ContainerPortsFragment();
+    public static ContainerVolumesFragment newInstance(Container container) {
+        ContainerVolumesFragment fragment = new ContainerVolumesFragment();
         Bundle args = new Bundle();
         args.putString(ARG_CONTAINER_ID, container.getId());
         fragment.setArguments(args);
@@ -53,7 +52,7 @@ public class ContainerPortsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_container_ports, container, false);
+        View view = inflater.inflate(R.layout.fragment_container_volumes, container, false);
 
         if (ContainerFragment.getContainer() != null) {
 
@@ -64,18 +63,18 @@ public class ContainerPortsFragment extends Fragment {
 
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
-            mListener.onContainerPortsFragmentInteraction(uri);
+            mListener.onContainerVolumesFragmentInteraction(uri);
         }
     }
 
 //    @Override
 //    public void onAttach(Context context) {
 //        super.onAttach(context);
-//        if (context instanceof OnContainerSecurityFragmentInteractionListener) {
-//            mListener = (OnContainerSecurityFragmentInteractionListener) context;
+//        if (context instanceof OnContainerHealthCheckFragmentInteractionListener) {
+//            mListener = (OnContainerHealthCheckFragmentInteractionListener) context;
 //        } else {
 //            throw new RuntimeException(context.toString()
-//                    + " must implement OnContainerSecurityFragmentInteractionListener");
+//                    + " must implement OnContainerHealthCheckFragmentInteractionListener");
 //        }
 //    }
 
@@ -90,12 +89,8 @@ public class ContainerPortsFragment extends Fragment {
      * fragment to allow an interaction in this fragment to be communicated
      * to the activity and potentially other fragments contained in that
      * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
      */
-    public interface OnContainerPortsFragmentInteractionListener {
-        void onContainerPortsFragmentInteraction(Uri uri);
+    public interface OnContainerVolumesFragmentInteractionListener {
+        void onContainerVolumesFragmentInteraction(Uri uri);
     }
 }

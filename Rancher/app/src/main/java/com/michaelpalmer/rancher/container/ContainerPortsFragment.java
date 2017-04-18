@@ -1,4 +1,4 @@
-package com.michaelpalmer.rancher;
+package com.michaelpalmer.rancher.container;
 
 import android.net.Uri;
 import android.os.Bundle;
@@ -6,31 +6,23 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TableLayout;
-import android.widget.TableRow;
-import android.widget.TextView;
 
+import com.michaelpalmer.rancher.R;
 import com.michaelpalmer.rancher.schema.Container;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.Iterator;
 
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link OnContainerLabelsFragmentInteractionListener} interface
+ * {@link OnContainerPortsFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link ContainerLabelsFragment#newInstance} factory method to
+ * Use the {@link ContainerPortsFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class ContainerLabelsFragment extends Fragment {
+public class ContainerPortsFragment extends Fragment {
     private static final String ARG_CONTAINER_ID = "container-id";
     private String mContainerId;
-    private OnContainerLabelsFragmentInteractionListener mListener;
+    private OnContainerPortsFragmentInteractionListener mListener;
     private String TAG = getClass().getSimpleName();
 
     /**
@@ -40,8 +32,8 @@ public class ContainerLabelsFragment extends Fragment {
      * @param container Container
      * @return A new instance of fragment ContainerInfoFragment.
      */
-    public static ContainerLabelsFragment newInstance(Container container) {
-        ContainerLabelsFragment fragment = new ContainerLabelsFragment();
+    public static ContainerPortsFragment newInstance(Container container) {
+        ContainerPortsFragment fragment = new ContainerPortsFragment();
         Bundle args = new Bundle();
         args.putString(ARG_CONTAINER_ID, container.getId());
         fragment.setArguments(args);
@@ -60,33 +52,10 @@ public class ContainerLabelsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_container_labels, container, false);
-
-        TableLayout tableLayout = (TableLayout) view.findViewById(R.id.container_labels_table);
+        View view = inflater.inflate(R.layout.fragment_container_ports, container, false);
 
         if (ContainerFragment.getContainer() != null) {
-            JSONObject labels = (JSONObject) ContainerFragment.getContainer().getProperty("labels");
-            Iterator<String> keys = labels.keys();
-            while (keys.hasNext()) {
-                String key = keys.next();
-                String value = labels.optString(key);
 
-
-                TextView txtKey = new TextView(getContext());
-                TextView txtValue = new TextView(getContext());
-                txtKey.setText(key);
-                txtValue.setText(value);
-
-
-                txtKey.setLayoutParams(new TableRow.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 0.4f));
-                txtValue.setLayoutParams(new TableRow.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 0.6f));
-
-                TableRow row = new TableRow(getContext());
-                row.addView(txtKey);
-                row.addView(txtValue);
-
-                tableLayout.addView(row);
-            }
         }
 
         return view;
@@ -94,18 +63,18 @@ public class ContainerLabelsFragment extends Fragment {
 
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
-            mListener.onContainerLabelsFragmentInteraction(uri);
+            mListener.onContainerPortsFragmentInteraction(uri);
         }
     }
 
-    //    @Override
+//    @Override
 //    public void onAttach(Context context) {
 //        super.onAttach(context);
-//        if (context instanceof OnContainerLabelsFragmentInteractionListener) {
-//            mListener = (OnContainerLabelsFragmentInteractionListener) context;
+//        if (context instanceof OnContainerSchedulingFragmentInteractionListener) {
+//            mListener = (OnContainerSchedulingFragmentInteractionListener) context;
 //        } else {
 //            throw new RuntimeException(context.toString()
-//                    + " must implement OnContainerLabelsFragmentInteractionListener");
+//                    + " must implement OnContainerSchedulingFragmentInteractionListener");
 //        }
 //    }
 
@@ -125,7 +94,7 @@ public class ContainerLabelsFragment extends Fragment {
      * "http://developer.android.com/training/basics/fragments/communicating.html"
      * >Communicating with Other Fragments</a> for more information.
      */
-    public interface OnContainerLabelsFragmentInteractionListener {
-        void onContainerLabelsFragmentInteraction(Uri uri);
+    public interface OnContainerPortsFragmentInteractionListener {
+        void onContainerPortsFragmentInteraction(Uri uri);
     }
 }

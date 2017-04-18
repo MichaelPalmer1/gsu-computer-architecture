@@ -1,4 +1,4 @@
-package com.michaelpalmer.rancher;
+package com.michaelpalmer.rancher.container;
 
 import android.net.Uri;
 import android.os.Bundle;
@@ -10,6 +10,7 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
+import com.michaelpalmer.rancher.R;
 import com.michaelpalmer.rancher.schema.Container;
 
 import org.json.JSONArray;

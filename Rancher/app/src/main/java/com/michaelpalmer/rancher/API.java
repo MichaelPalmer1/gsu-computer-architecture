@@ -21,7 +21,7 @@ public class API {
      * @return String response or null
      */
     @Nullable
-    static String GET(String url) {
+    public static String GET(String url) {
         String s, response = "";
         try {
             // Create connection
@@ -61,7 +61,7 @@ public class API {
      * @return String response or null
      */
     @Nullable
-    static String POST(String url) {
+    public static String POST(String url) {
         String s, response = "";
         try {
             // Create connection

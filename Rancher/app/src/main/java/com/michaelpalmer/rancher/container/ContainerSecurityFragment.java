@@ -1,29 +1,28 @@
-package com.michaelpalmer.rancher;
+package com.michaelpalmer.rancher.container;
 
-import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
+import com.michaelpalmer.rancher.R;
 import com.michaelpalmer.rancher.schema.Container;
 
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link OnContainerInfoFragmentInteractionListener} interface
+ * {@link OnContainerSecurityFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link ContainerInfoFragment#newInstance} factory method to
+ * Use the {@link ContainerSecurityFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class ContainerInfoFragment extends Fragment {
+public class ContainerSecurityFragment extends Fragment {
     private static final String ARG_CONTAINER_ID = "container-id";
     private String mContainerId;
-    private OnContainerInfoFragmentInteractionListener mListener;
+    private OnContainerSecurityFragmentInteractionListener mListener;
     private String TAG = getClass().getSimpleName();
 
     /**
@@ -33,8 +32,8 @@ public class ContainerInfoFragment extends Fragment {
      * @param container Container
      * @return A new instance of fragment ContainerInfoFragment.
      */
-    public static ContainerInfoFragment newInstance(Container container) {
-        ContainerInfoFragment fragment = new ContainerInfoFragment();
+    public static ContainerSecurityFragment newInstance(Container container) {
+        ContainerSecurityFragment fragment = new ContainerSecurityFragment();
         Bundle args = new Bundle();
         args.putString(ARG_CONTAINER_ID, container.getId());
         fragment.setArguments(args);
@@ -53,23 +52,10 @@ public class ContainerInfoFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_container_info, container, false);
-
-        TextView container_external_id = (TextView) view.findViewById(R.id.container_info_external_id);
-        TextView container_state = (TextView) view.findViewById(R.id.container_info_state);
+        View view = inflater.inflate(R.layout.fragment_container_security, container, false);
 
         if (ContainerFragment.getContainer() != null) {
-            try {
-                container_state.setText(ContainerFragment.getContainer().getProperty("state").toString());
-            } catch (NullPointerException e) {
-                container_state.setText(R.string.unknown);
-            }
 
-            try {
-                container_external_id.setText(ContainerFragment.getContainer().getProperty("externalId").toString());
-            } catch (NullPointerException e) {
-                container_external_id.setText(R.string.unknown);
-            }
         }
 
         return view;
@@ -77,18 +63,18 @@ public class ContainerInfoFragment extends Fragment {
 
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
-            mListener.onContainerInfoFragmentInteraction(uri);
+            mListener.onContainerSecurityFragmentInteraction(uri);
         }
     }
 
-    //    @Override
+//    @Override
 //    public void onAttach(Context context) {
 //        super.onAttach(context);
-//        if (context instanceof OnContainerLabelsFragmentInteractionListener) {
-//            mListener = (OnContainerLabelsFragmentInteractionListener) context;
+//        if (context instanceof OnContainerSchedulingFragmentInteractionListener) {
+//            mListener = (OnContainerSchedulingFragmentInteractionListener) context;
 //        } else {
 //            throw new RuntimeException(context.toString()
-//                    + " must implement OnContainerSecurityFragmentInteractionListener");
+//                    + " must implement OnContainerSchedulingFragmentInteractionListener");
 //        }
 //    }
 
@@ -103,12 +89,8 @@ public class ContainerInfoFragment extends Fragment {
      * fragment to allow an interaction in this fragment to be communicated
      * to the activity and potentially other fragments contained in that
      * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
      */
-    public interface OnContainerInfoFragmentInteractionListener {
-        void onContainerInfoFragmentInteraction(Uri uri);
+    public interface OnContainerSecurityFragmentInteractionListener {
+        void onContainerSecurityFragmentInteraction(Uri uri);
     }
 }

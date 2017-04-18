@@ -19,6 +19,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.michaelpalmer.rancher.container.ContainerFragment;
 import com.michaelpalmer.rancher.schema.Container;
 import com.michaelpalmer.rancher.schema.Service;
 import com.michaelpalmer.rancher.schema.Stack;

@@ -1,4 +1,4 @@
-package com.michaelpalmer.rancher;
+package com.michaelpalmer.rancher.container;
 
 import android.content.Context;
 import android.net.Uri;
@@ -15,6 +15,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.michaelpalmer.rancher.API;
+import com.michaelpalmer.rancher.R;
 import com.michaelpalmer.rancher.schema.Container;
 
 import org.json.JSONException;
@@ -170,22 +172,22 @@ public class ContainerFragment extends Fragment {
                     return ContainerCommandFragment.newInstance(container);
 
                 case CONTAINER_TAB_VOLUMES:
-                    return ContainerPortsFragment.newInstance(container);
+                    return ContainerVolumesFragment.newInstance(container);
 
                 case CONTAINER_TAB_NETWORKING:
-                    return ContainerPortsFragment.newInstance(container);
+                    return ContainerNetworkingFragment.newInstance(container);
 
                 case CONTAINER_TAB_SECURITY:
                     return ContainerSecurityFragment.newInstance(container);
 
                 case CONTAINER_TAB_HEALTH_CHECK:
-                    return ContainerPortsFragment.newInstance(container);
+                    return ContainerHealthCheckFragment.newInstance(container);
 
                 case CONTAINER_TAB_LABELS:
                     return ContainerLabelsFragment.newInstance(container);
 
                 case CONTAINER_TAB_SCHEDULING:
-                    return ContainerPortsFragment.newInstance(container);
+                    return ContainerSchedulingFragment.newInstance(container);
 
             }
             return null;
