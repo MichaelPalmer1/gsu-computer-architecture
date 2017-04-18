@@ -21,6 +21,7 @@ import android.widget.Toast;
 
 import com.michaelpalmer.rancher.container.ContainerFragment;
 import com.michaelpalmer.rancher.schema.Container;
+import com.michaelpalmer.rancher.schema.Host;
 import com.michaelpalmer.rancher.schema.Service;
 import com.michaelpalmer.rancher.schema.Stack;
 
@@ -32,7 +33,9 @@ public class MainActivity extends AppCompatActivity
         StacksListFragment.OnStackListFragmentInteractionListener,
         ServicesListFragment.OnServiceListFragmentInteractionListener,
         ContainerListFragment.OnContainerListFragmentInteractionListener,
+        HostsListFragment.OnHostsListFragmentInteractionListener,
         LogsFragment.OnLogsFragmentInteractionListener,
+        HostFragment.OnHostFragmentInteractionListener,
         ContainerFragment.OnContainerFragmentInteractionListener,
         SharedPreferences.OnSharedPreferenceChangeListener {
 
@@ -135,13 +138,29 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_stacks) {
+            try {
+                getSupportActionBar().setSubtitle(R.string.action_stacks);
+            } catch (NullPointerException e) {
+                // Let it go
+            }
+
             getSupportFragmentManager()
                     .beginTransaction()
                     .replace(R.id.fragment_layout, new StacksListFragment())
                     .addToBackStack(null)
                     .commit();
         } else if (id == R.id.nav_hosts) {
+            try {
+                getSupportActionBar().setSubtitle(R.string.action_hosts);
+            } catch (NullPointerException e) {
+                // Let it go
+            }
 
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.fragment_layout, new HostsListFragment())
+                    .addToBackStack(null)
+                    .commit();
         } else if (id == R.id.nav_containers) {
 
         } else if (id == R.id.nav_settings) {
@@ -234,6 +253,26 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onContainerFragmentInteraction(Uri uri) {
+
+    }
+
+    @Override
+    public void onHostsListFragmentInteraction(Host item) {
+        try {
+            getSupportActionBar().setSubtitle(item.getName());
+        } catch (NullPointerException e) {
+            // Let it go
+        }
+
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.fragment_layout, HostFragment.newInstance(item))
+                .addToBackStack(null)
+                .commit();
+    }
+
+    @Override
+    public void onHostFragmentInteraction(Uri uri) {
 
     }
 }
