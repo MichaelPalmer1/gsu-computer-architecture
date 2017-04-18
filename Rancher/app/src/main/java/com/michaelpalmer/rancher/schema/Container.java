@@ -5,24 +5,26 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Service {
+public class Container {
 
-    public static List<Service> ITEMS = new ArrayList<>();
+    public static List<Container> ITEMS = new ArrayList<>();
     private String id;
     private String name;
     private String state;
     private String description;
     private String healthState;
-    private JSONObject links;
+    private JSONObject links, actions;
 
 
-    public Service(String id, String name, String state, String description, String healthState, JSONObject links) {
+    public Container(String id, String name, String state, String description, String healthState, JSONObject links,
+                     JSONObject actions) {
         this.id = id;
         this.name = name;
         this.state = state;
         this.description = description;
         this.healthState = healthState;
         this.links = links;
+        this.actions = actions;
     }
 
     public String getId() {
@@ -47,5 +49,9 @@ public class Service {
 
     public JSONObject getLinks() {
         return links;
+    }
+
+    public JSONObject getActions() {
+        return actions;
     }
 }

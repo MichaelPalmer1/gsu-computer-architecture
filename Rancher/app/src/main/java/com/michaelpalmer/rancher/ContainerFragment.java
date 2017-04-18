@@ -10,8 +10,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.michaelpalmer.rancher.schema.Container;
 import com.michaelpalmer.rancher.schema.Service;
-import com.michaelpalmer.rancher.schema.Stack;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -23,30 +23,29 @@ import java.util.List;
 /**
  * A fragment representing a list of Items.
  * <p/>
- * Activities containing this fragment MUST implement the {@link OnServiceListFragmentInteractionListener}
+ * Activities containing this fragment MUST implement the {@link OnContainerListFragmentInteractionListener}
  * interface.
  */
-public class ServiceFragment extends Fragment {
+public class ContainerFragment extends Fragment {
 
-    private static final String ARG_STACK_ID = "stack-id", ARG_SERVICES_URL = "services-url";
-    private String mStackId = null, mServicesUrl = null;
-    private OnServiceListFragmentInteractionListener mListener;
+    private OnContainerListFragmentInteractionListener mListener;
+    private static final String ARG_SERVICE_ID = "service-id", ARG_CONTAINERS_URL = "services-url";
+    private String mServiceId = null, mContainersUrl = null;
     private RecyclerView recyclerView;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
      */
-    public ServiceFragment() {
+    public ContainerFragment() {
     }
 
-    @SuppressWarnings("unused")
-    public static ServiceFragment newInstance(Stack stack) {
-        ServiceFragment fragment = new ServiceFragment();
+    public static ContainerFragment newInstance(Service service) {
+        ContainerFragment fragment = new ContainerFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_STACK_ID, stack.getId());
+        args.putString(ARG_SERVICE_ID, service.getId());
         try {
-            args.putString(ARG_SERVICES_URL, stack.getLinks().getString("services"));
+            args.putString(ARG_CONTAINERS_URL, service.getLinks().getString("instances"));
         } catch (JSONException e) {
             // Let it go
         }
@@ -59,22 +58,22 @@ public class ServiceFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         if (getArguments() != null) {
-            mStackId = getArguments().getString(ARG_STACK_ID);
-            mServicesUrl = getArguments().getString(ARG_SERVICES_URL);
+            mServiceId = getArguments().getString(ARG_SERVICE_ID);
+            mContainersUrl = getArguments().getString(ARG_CONTAINERS_URL);
         }
 
-        new ServicesAPI().execute(mServicesUrl);
+        new ContainersAPI().execute(mContainersUrl);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_service_list, container, false);
+        View view = inflater.inflate(R.layout.fragment_container_list, container, false);
 
         // Set the adapter
         if (view instanceof RecyclerView) {
             recyclerView = (RecyclerView) view;
-            recyclerView.setAdapter(new ServiceRecyclerViewAdapter(getContext(), Service.ITEMS, mListener));
+            recyclerView.setAdapter(new ContainerRecyclerViewAdapter(getContext(), Container.ITEMS, mListener));
         }
         return view;
     }
@@ -82,11 +81,11 @@ public class ServiceFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof OnServiceListFragmentInteractionListener) {
-            mListener = (OnServiceListFragmentInteractionListener) context;
+        if (context instanceof OnContainerListFragmentInteractionListener) {
+            mListener = (OnContainerListFragmentInteractionListener) context;
         } else {
             throw new RuntimeException(context.toString()
-                    + " must implement OnServiceListFragmentInteractionListener");
+                    + " must implement OnContainerListFragmentInteractionListener");
         }
     }
 
@@ -106,14 +105,13 @@ public class ServiceFragment extends Fragment {
      * "http://developer.android.com/training/basics/fragments/communicating.html"
      * >Communicating with Other Fragments</a> for more information.
      */
-    public interface OnServiceListFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onServiceListFragmentInteraction(Service item);
+    public interface OnContainerListFragmentInteractionListener {
+        void onContainerListFragmentInteraction(Container item);
     }
 
-    private class ServicesAPI extends AsyncTask<String, Void, List<Service>> {
+    private class ContainersAPI extends AsyncTask<String, Void, List<Container>> {
 
-        private static final String TAG = "ServicesAPI";
+        private static final String TAG = "ContainersAPI";
 
         /**
          * Perform the API call
@@ -122,18 +120,18 @@ public class ServiceFragment extends Fragment {
          * @return API Response as string
          */
         @Override
-        protected List<Service> doInBackground(String... params) {
+        protected List<Container> doInBackground(String... params) {
             return fetchItems(params[0]);
         }
 
         @Override
-        protected void onPostExecute(List<Service> items) {
-            Service.ITEMS = items;
-            recyclerView.setAdapter(new ServiceRecyclerViewAdapter(getContext(), Service.ITEMS, mListener));
+        protected void onPostExecute(List<Container> items) {
+            Container.ITEMS = items;
+            recyclerView.setAdapter(new ContainerRecyclerViewAdapter(getContext(), Container.ITEMS, mListener));
         }
 
-        private List<Service> fetchItems(String url) {
-            List<Service> items = new ArrayList<>();
+        private List<Container> fetchItems(String url) {
+            List<Container> items = new ArrayList<>();
 
             // Fetch the data
             String jsonString = API.GET(url);
@@ -145,32 +143,33 @@ public class ServiceFragment extends Fragment {
             return items;
         }
 
-        private void parseItems(List<Service> items, String data) {
+        private void parseItems(List<Container> items, String data) {
             try {
                 // Get base object
                 JSONObject jsonBaseObject = new JSONObject(data);
 
-                // Get the stacks
-                JSONArray services = jsonBaseObject.getJSONArray("data");
+                // Get the containers
+                JSONArray containers = jsonBaseObject.getJSONArray("data");
 
-                for (int i = 0; i < services.length(); i++) {
+                for (int i = 0; i < containers.length(); i++) {
                     // Get photo object
-                    JSONObject service = services.getJSONObject(i);
+                    JSONObject container = containers.getJSONObject(i);
 
                     // Get relevant data
-                    String id = service.getString("id");
-                    String name = service.getString("name");
-                    String state = service.getString("state");
-                    String description = service.getString("description");
-                    String healthState = service.getString("healthState");
-                    JSONObject links = service.getJSONObject("links");
+                    String id = container.getString("id");
+                    String name = container.getString("name");
+                    String state = container.getString("state");
+                    String description = container.getString("description");
+                    String healthState = container.getString("healthState");
+                    JSONObject links = container.getJSONObject("links");
+                    JSONObject actions = container.getJSONObject("actions");
 
                     if (description == null) {
                         description = "";
                     }
 
                     // Instantiate stack and add to list
-                    Service item = new Service(id, name, state, description, healthState, links);
+                    Container item = new Container(id, name, state, description, healthState, links, actions);
                     items.add(item);
                 }
             } catch (JSONException e) {

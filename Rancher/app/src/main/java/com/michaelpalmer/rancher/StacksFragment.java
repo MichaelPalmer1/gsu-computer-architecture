@@ -1,8 +1,10 @@
 package com.michaelpalmer.rancher;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -19,6 +21,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * A fragment representing a list of Items.
@@ -28,12 +31,10 @@ import java.util.List;
  */
 public class StacksFragment extends Fragment {
 
-    // TODO: Customize parameter argument names
-    private static final String ARG_COLUMN_COUNT = "column-count";
-    // TODO: Customize parameters
-    private int mColumnCount = 1;
+    private static final String ARG_PROJECT_ID = "project-id";
     private OnStackListFragmentInteractionListener mListener;
     private RecyclerView recyclerView;
+    private String mProjectId = "1a5";
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -42,12 +43,10 @@ public class StacksFragment extends Fragment {
     public StacksFragment() {
     }
 
-    // TODO: Customize parameter initialization
-    @SuppressWarnings("unused")
-    public static StacksFragment newInstance(int columnCount) {
+    public static StacksFragment newInstance(String project) {
         StacksFragment fragment = new StacksFragment();
         Bundle args = new Bundle();
-        args.putInt(ARG_COLUMN_COUNT, columnCount);
+        args.putString(ARG_PROJECT_ID, project);
         fragment.setArguments(args);
         return fragment;
     }
@@ -57,9 +56,9 @@ public class StacksFragment extends Fragment {
         super.onCreate(savedInstanceState);
         new StacksAPI().execute();
 
-//        if (getArguments() != null) {
-//            mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
-//        }
+        if (getArguments() != null) {
+            mProjectId = getArguments().getString(ARG_PROJECT_ID);
+        }
     }
 
     @Override
@@ -106,7 +105,6 @@ public class StacksFragment extends Fragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnStackListFragmentInteractionListener {
-        // TODO: Update argument type and name
         void onStackListFragmentInteraction(Stack item);
     }
 
@@ -134,12 +132,17 @@ public class StacksFragment extends Fragment {
         private List<Stack> fetchItems() {
             List<Stack> items = new ArrayList<>();
 
+            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+            String rancherUrl = preferences.getString("rancher_url", null);
+
+            if (rancherUrl == null) {
+                Log.w(TAG, "Rancher settings are not configured.");
+                return items;
+            }
+
             // Fetch the data
             String jsonString = API.GET(
-                    "http://rancher.aws/v2-beta/projects/1a5/stacks/",
-                    "4C78A5C44C14140A6576",
-                    "FUetQLpzdCYZmvYWVVa9KSzck6xgGKgzWUnzgBsJ"
-            );
+                    String.format(Locale.US, "%s/v2-beta/projects/%s/stacks/", rancherUrl, mProjectId));
             Log.i(TAG, "Received JSON: " + jsonString);
 
             // Parse the data
@@ -149,6 +152,10 @@ public class StacksFragment extends Fragment {
         }
 
         private void parseItems(List<Stack> items, String data) {
+            if (data == null) {
+                return;
+            }
+
             try {
                 // Get base object
                 JSONObject jsonBaseObject = new JSONObject(data);

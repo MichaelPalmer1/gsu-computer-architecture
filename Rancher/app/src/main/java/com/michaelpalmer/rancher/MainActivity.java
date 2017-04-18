@@ -1,7 +1,10 @@
 package com.michaelpalmer.rancher;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -14,14 +17,22 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
+import com.michaelpalmer.rancher.schema.Container;
 import com.michaelpalmer.rancher.schema.Service;
 import com.michaelpalmer.rancher.schema.Stack;
+
+import java.net.Authenticator;
+import java.net.PasswordAuthentication;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
         StacksFragment.OnStackListFragmentInteractionListener,
-        ServiceFragment.OnServiceListFragmentInteractionListener {
+        ServiceFragment.OnServiceListFragmentInteractionListener,
+        ContainerFragment.OnContainerListFragmentInteractionListener,
+        LogsFragment.OnLogsFragmentInteractionListener,
+        SharedPreferences.OnSharedPreferenceChangeListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +59,35 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        // Get preferences and register on change listener
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        preferences.registerOnSharedPreferenceChangeListener(this);
+
+        // Get settings
+        String rancher_url = preferences.getString("rancher_url", null);
+        final String rancher_access_key = preferences.getString("rancher_access_key", null);
+        final String rancher_secret_key = preferences.getString("rancher_secret_key", null);
+
+        // Check that settings have been configured
+        if (rancher_url == null || rancher_access_key == null || rancher_secret_key == null) {
+            Toast.makeText(this, "Rancher settings need to be configured.", Toast.LENGTH_LONG).show();
+            Intent intent = new Intent(this, SettingsActivity.class);
+            startActivity(intent);
+        } else {
+            Authenticator.setDefault(new Authenticator() {
+                protected PasswordAuthentication getPasswordAuthentication() {
+                    return new PasswordAuthentication(rancher_access_key, rancher_secret_key.toCharArray());
+                }
+            });
+        }
+
+        try {
+            getSupportActionBar().setSubtitle(R.string.action_stacks);
+        } catch (NullPointerException e) {
+            // Let it go
+        }
+
+        // Load stacks fragment
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.fragment_layout, new StacksFragment())
@@ -80,7 +120,7 @@ public class MainActivity extends AppCompatActivity
 //        int id = item.getItemId();
 //
 //        //noinspection SimplifiableIfStatement
-//        if (id == R.id.nav_settings) {
+//        if (id == R.id.action_about) {
 //            return true;
 //        }
 
@@ -112,8 +152,19 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
+    /**
+     * Load services for this stack
+     *
+     * @param item Stack
+     */
     @Override
     public void onStackListFragmentInteraction(Stack item) {
+        try {
+            getSupportActionBar().setSubtitle(R.string.action_services);
+        } catch (NullPointerException e) {
+            // Let it go
+        }
+
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.fragment_layout, ServiceFragment.newInstance(item))
@@ -121,8 +172,62 @@ public class MainActivity extends AppCompatActivity
                 .commit();
     }
 
+    /**
+     * Load containers for this service
+     *
+     * @param item Service
+     */
     @Override
     public void onServiceListFragmentInteraction(Service item) {
+        try {
+            getSupportActionBar().setSubtitle(R.string.action_containers);
+        } catch (NullPointerException e) {
+            // Let it go
+        }
+
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.fragment_layout, ContainerFragment.newInstance(item))
+                .addToBackStack(null)
+                .commit();
+    }
+
+    @Override
+    public void onContainerListFragmentInteraction(Container item) {
+//        try {
+//            getSupportActionBar().setSubtitle(R.string.action_logs);
+//        } catch (NullPointerException e) {
+//            // Let it go
+//        }
+//
+//        getSupportFragmentManager()
+//                .beginTransaction()
+//                .replace(R.id.fragment_layout, LogsFragment.newInstance(item))
+//                .addToBackStack(null)
+//                .commit();
+    }
+
+    @Override
+    public void onLogsFragmentInteraction(Uri uri) {
 
     }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        if (!key.equals("rancher_access_key") && !key.equals("rancher_secret_key")) {
+            return;
+        }
+
+        final String username = sharedPreferences.getString("rancher_access_key", null);
+        final String password = sharedPreferences.getString("rancher_secret_key", null);
+
+        if (username != null && password != null) {
+            Authenticator.setDefault(new Authenticator() {
+                protected PasswordAuthentication getPasswordAuthentication() {
+                    return new PasswordAuthentication(username, password.toCharArray());
+                }
+            });
+        }
+    }
+
 }

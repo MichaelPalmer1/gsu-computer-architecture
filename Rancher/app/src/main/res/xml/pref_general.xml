@@ -9,7 +9,7 @@
         android:title="Rancher URL"/>
 
     <EditTextPreference
-        android:inputType="text"
+        android:inputType="textCapCharacters"
         android:key="rancher_access_key"
         android:maxLines="1"
         android:selectAllOnFocus="true"
