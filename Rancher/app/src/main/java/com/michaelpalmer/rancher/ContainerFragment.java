@@ -167,7 +167,7 @@ public class ContainerFragment extends Fragment {
                     return ContainerPortsFragment.newInstance(container);
 
                 case CONTAINER_TAB_COMMAND:
-                    return ContainerPortsFragment.newInstance(container);
+                    return ContainerCommandFragment.newInstance(container);
 
                 case CONTAINER_TAB_VOLUMES:
                     return ContainerPortsFragment.newInstance(container);

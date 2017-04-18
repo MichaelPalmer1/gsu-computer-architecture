@@ -1,0 +1,108 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.michaelpalmer.rancher.ContainerInfoFragment">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        android:text="Command"/>
+
+    <TextView
+        android:id="@+id/container_command_commands"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="Container commands"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        android:text="Entry Point"/>
+
+    <TextView
+        android:id="@+id/container_command_entry_point"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="Entry point"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        android:text="Working Directory"/>
+
+    <TextView
+        android:id="@+id/container_command_working_dir"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="Work dir"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        android:text="User"/>
+
+    <TextView
+        android:id="@+id/container_command_user"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="User"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        android:text="Console"/>
+
+    <TextView
+        android:id="@+id/container_command_console"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="console"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        android:text="Auto Restart"/>
+
+    <TextView
+        android:id="@+id/container_command_auto_restart"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="Auto restart"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        android:text="Environment"/>
+
+    <TableLayout
+        android:id="@+id/container_command_environment_table"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TableRow>
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.5"
+                android:text="Key"/>
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.5"
+                android:text="Value"/>
+        </TableRow>
+
+    </TableLayout>
+
+</LinearLayout>

@@ -19,7 +19,17 @@ public class BaseSchema {
         Iterator<String> keys = data.keys();
         while (keys.hasNext()) {
             String key = keys.next();
-            dataMap.put(key, data.opt(key));
+            Object obj = data.opt(key);
+
+            // Try to convert "null" to null
+            try {
+                if (obj.toString().equals("null")) {
+                    obj = null;
+                }
+            } catch (Exception e) {
+                // If something goes wrong, fallback to default action.
+            }
+            dataMap.put(key, obj);
         }
     }
 
