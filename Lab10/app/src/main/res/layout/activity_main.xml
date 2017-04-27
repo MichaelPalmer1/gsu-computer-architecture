@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.michaelpalmer.lab10.MainActivity">
+
+    <com.androidplot.xy.XYPlot
+        android:id="@+id/plot_levels"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.475"/>
+
+    <com.androidplot.xy.XYPlot
+        android:id="@+id/plot_history"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.475"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.05"
+        android:orientation="horizontal"
+        android:gravity="center">
+
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/checkbox_hardware_accelerated"
+            android:text="Hardware Accelerated" />
+
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/checkbox_show_fps"
+            android:text="Show FPS" />
+
+    </LinearLayout>
+
+</LinearLayout>
