@@ -88,8 +88,8 @@ public class HostFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_host, container, false);
 
         // Set hostname
-        TextView hostName = (TextView) view.findViewById(R.id.host_host_name);
-        hostName.setText(currentHost.getName());
+//        TextView hostName = (TextView) view.findViewById(R.id.host_host_name);
+//        hostName.setText(currentHost.getName());
 
         return view;
     }

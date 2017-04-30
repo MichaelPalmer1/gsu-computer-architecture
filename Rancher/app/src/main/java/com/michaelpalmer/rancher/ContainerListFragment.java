@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.michaelpalmer.rancher.schema.Container;
+import com.michaelpalmer.rancher.schema.Host;
 import com.michaelpalmer.rancher.schema.Service;
 
 import org.json.JSONArray;
@@ -35,11 +36,13 @@ import java.util.List;
 public class ContainerListFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
 
     private OnContainerListFragmentInteractionListener mListener;
-    private static final String ARG_SERVICE_ID = "service-id", ARG_CONTAINERS_URL = "services-url";
-    private String mServiceId = null, mContainersUrl = null;
+    private static final String ARG_SERVICE_ID = "service-id", ARG_HOST_ID = "host-id",
+            ARG_CONTAINERS_URL = "services-url";
+    private String mHostId = null, mServiceId = null, mContainersUrl = null;
     private RecyclerView recyclerView;
     private Menu mOptionsMenu;
     private Service service;
+    private Host host;
     private SwipeRefreshLayout swipeRefreshLayout;
 
     public static ContainerListFragment newInstance(Service service) {
@@ -56,6 +59,20 @@ public class ContainerListFragment extends Fragment implements SwipeRefreshLayou
         return fragment;
     }
 
+    public static ContainerListFragment newInstance(Host host) {
+        ContainerListFragment fragment = new ContainerListFragment();
+        Bundle args = new Bundle();
+        args.putString(ARG_HOST_ID, host.getId());
+        try {
+            args.putString(ARG_CONTAINERS_URL, host.getLinks().getString("instances"));
+        } catch (JSONException e) {
+            // Let it go
+        }
+        fragment.setArguments(args);
+        fragment.host = host;
+        return fragment;
+    }
+
     /**
      * Load the containers
      */
@@ -69,10 +86,11 @@ public class ContainerListFragment extends Fragment implements SwipeRefreshLayou
 
         if (getArguments() != null) {
             mServiceId = getArguments().getString(ARG_SERVICE_ID);
+            mHostId = getArguments().getString(ARG_HOST_ID);
             mContainersUrl = getArguments().getString(ARG_CONTAINERS_URL);
         }
 
-        setHasOptionsMenu(true);
+        setHasOptionsMenu(mServiceId != null);
     }
 
     @Override

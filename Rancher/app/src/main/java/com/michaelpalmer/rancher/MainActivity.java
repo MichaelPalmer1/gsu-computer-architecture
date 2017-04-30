@@ -225,7 +225,7 @@ public class MainActivity extends AppCompatActivity
 
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.fragment_layout, HostFragment.newInstance(item))
+                .replace(R.id.fragment_layout, ContainerListFragment.newInstance(item))
                 .addToBackStack(null)
                 .commit();
     }
