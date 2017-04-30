@@ -55,6 +55,22 @@ public class ContainerRecyclerViewAdapter extends RecyclerView.Adapter<Container
                 holder.mStateView.setBackgroundColor(mContext.getResources().getColor(R.color.colorInactive));
                 break;
 
+            case "stopped":
+                holder.mStateView.setBackgroundColor(mContext.getResources().getColor(R.color.colorInactive));
+                break;
+
+            case "removing":
+                holder.mStateView.setBackgroundColor(mContext.getResources().getColor(R.color.colorInactive));
+                break;
+
+            case "removed":
+                holder.mStateView.setBackgroundColor(mContext.getResources().getColor(R.color.colorInactive));
+                break;
+
+            case "purged":
+                holder.mStateView.setBackgroundColor(mContext.getResources().getColor(R.color.colorInactive));
+                break;
+
             default:
                 holder.mStateView.setBackgroundColor(Color.WHITE);
         }

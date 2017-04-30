@@ -1,6 +1,7 @@
 package com.michaelpalmer.rancher.container;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -10,8 +11,12 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -46,6 +51,7 @@ public class ContainerFragment extends Fragment {
     private String mContainerId, mContainerUrl;
     public static Container container = null;
     private TabLayout tabLayout;
+    private Menu mOptionsMenu;
 
     private OnContainerFragmentInteractionListener mListener;
 
@@ -86,6 +92,8 @@ public class ContainerFragment extends Fragment {
         if (container == null) {
             new ContainerAPI().execute(mContainerUrl);
         }
+
+        setHasOptionsMenu(true);
     }
 
     @Override
@@ -105,6 +113,119 @@ public class ContainerFragment extends Fragment {
         tabLayout.setupWithViewPager(viewPager);
 
         return view;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.menu_container, menu);
+        mOptionsMenu = menu;
+        updateOptionsMenu();
+    }
+
+    private void updateOptionsMenu() {
+        switch (container.getState()) {
+            case "running":
+                mOptionsMenu.findItem(R.id.action_start).setVisible(false).setEnabled(false);
+                mOptionsMenu.findItem(R.id.action_restart).setVisible(true).setEnabled(true);
+                mOptionsMenu.findItem(R.id.action_stop).setVisible(true).setEnabled(true);
+                mOptionsMenu.findItem(R.id.action_edit).setVisible(true).setEnabled(true);
+                mOptionsMenu.findItem(R.id.action_delete).setVisible(true).setEnabled(true);
+                break;
+
+            case "stopped":
+                mOptionsMenu.findItem(R.id.action_start).setVisible(true).setEnabled(true);
+                mOptionsMenu.findItem(R.id.action_restart).setVisible(false).setEnabled(false);
+                mOptionsMenu.findItem(R.id.action_stop).setVisible(false).setEnabled(false);
+                mOptionsMenu.findItem(R.id.action_edit).setVisible(true).setEnabled(true);
+                mOptionsMenu.findItem(R.id.action_delete).setVisible(true).setEnabled(true);
+                break;
+
+            default:
+                mOptionsMenu.findItem(R.id.action_start).setVisible(false).setEnabled(false);
+                mOptionsMenu.findItem(R.id.action_restart).setVisible(false).setEnabled(false);
+                mOptionsMenu.findItem(R.id.action_stop).setVisible(false).setEnabled(false);
+                mOptionsMenu.findItem(R.id.action_edit).setVisible(false).setEnabled(false);
+                mOptionsMenu.findItem(R.id.action_delete).setVisible(false).setEnabled(false);
+        }
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+        updateOptionsMenu();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_start:
+                new AlertDialog.Builder(getContext())
+                        .setTitle("Start Container")
+                        .setMessage("Are you sure you want to start " + container.getName() + "?")
+                        .setIcon(R.drawable.ic_start_black)
+                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                Log.d("ContainerActions", "Starting container " + container.getName());
+                            }
+                        })
+                        .setNegativeButton(android.R.string.no, null)
+                        .show();
+                return true;
+
+            case R.id.action_restart:
+                new AlertDialog.Builder(getContext())
+                        .setTitle("Restart Container")
+                        .setMessage("Are you sure you want to restart " + container.getName() + "?")
+                        .setIcon(R.drawable.ic_restart_black)
+                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                Log.d("ContainerActions", "Restarting container " + container.getName());
+                            }
+                        })
+                        .setNegativeButton(android.R.string.no, null)
+                        .show();
+                return true;
+
+            case R.id.action_stop:
+                new AlertDialog.Builder(getContext())
+                        .setTitle("Stop Container")
+                        .setMessage("Are you sure you want to stop " + container.getName() + "?")
+                        .setIcon(R.drawable.ic_stop_black)
+                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                Log.d("ContainerActions", "Stopping container " + container.getName());
+                            }
+                        })
+                        .setNegativeButton(android.R.string.no, null)
+                        .show();
+                return true;
+
+            case R.id.action_edit:
+                // Go to edit container activity
+                return true;
+
+            case R.id.action_delete:
+                new AlertDialog.Builder(getContext())
+                        .setTitle("Delete Container")
+                        .setMessage("Are you sure you want to delete " + container.getName() + "?")
+                        .setIcon(R.drawable.ic_delete_black)
+                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                Log.d("ContainerActions", "Deleting container " + container.getName());
+                            }
+                        })
+                        .setNegativeButton(android.R.string.no, null)
+                        .show();
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     public void onButtonPressed(Uri uri) {

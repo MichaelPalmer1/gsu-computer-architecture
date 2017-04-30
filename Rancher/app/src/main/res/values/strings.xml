@@ -9,6 +9,11 @@
     <string name="action_services">Services</string>
     <string name="action_hosts">Hosts</string>
     <string name="action_containers">Containers</string>
+    <string name="action_start">Start</string>
+    <string name="action_restart">Restart</string>
+    <string name="action_stop">Stop</string>
+    <string name="action_edit">Edit</string>
+    <string name="action_delete">Delete</string>
     <string name="title_activity_settings">Settings</string>
 
     <!-- Strings related to Settings -->

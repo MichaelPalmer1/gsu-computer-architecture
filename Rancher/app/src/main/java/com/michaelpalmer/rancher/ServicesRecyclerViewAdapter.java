@@ -61,6 +61,14 @@ public class ServicesRecyclerViewAdapter extends RecyclerView.Adapter<ServicesRe
                 holder.mStateView.setBackgroundColor(mContext.getResources().getColor(R.color.colorInactive));
                 break;
 
+            case "inactive":
+                holder.mStateView.setBackgroundColor(mContext.getResources().getColor(R.color.colorInactive));
+                break;
+
+            case "initializing":
+                holder.mStateView.setBackgroundColor(mContext.getResources().getColor(R.color.colorUnhealthy));
+                break;
+
             default:
                 holder.mStateView.setBackgroundColor(Color.WHITE);
         }
