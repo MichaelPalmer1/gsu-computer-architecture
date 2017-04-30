@@ -1,208 +1,208 @@
 package com.michaelpalmer.rancher;
 
-import android.content.Context;
-import android.net.Uri;
-import android.os.AsyncTask;
-import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
-import android.widget.Toast;
+import com.neovisionaries.ws.client.OpeningHandshakeException;
+import com.neovisionaries.ws.client.StatusLine;
+import com.neovisionaries.ws.client.WebSocket;
+import com.neovisionaries.ws.client.WebSocketException;
+import com.neovisionaries.ws.client.WebSocketFactory;
+import com.neovisionaries.ws.client.WebSocketFrame;
+import com.neovisionaries.ws.client.WebSocketListener;
+import com.neovisionaries.ws.client.WebSocketState;
 
-import com.michaelpalmer.rancher.schema.Container;
-
-import org.java_websocket.handshake.ServerHandshake;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.HashMap;
-import java.util.Locale;
+import java.io.IOException;
+import java.net.Authenticator;
+import java.net.PasswordAuthentication;
+import java.util.List;
 import java.util.Map;
 
+public class Logs  {
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link OnLogsFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link LogsFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
-public class LogsFragment extends Fragment {
-    private static final String ARG_LOGS_URL = "logs-url", ARG_CONTAINER_ID = "container-id";
-    private String mLogsUrl, mContainerId;
-    private OnLogsFragmentInteractionListener mListener;
-    private LogsClient logsClient;
-    private TextView logOutput;
+    public static void main(String[] args) {
+        String url = "";
+        String token = "";
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param container Container
-     * @return A new instance of fragment LogsFragment.
-     */
-    public static LogsFragment newInstance(Container container) {
-        LogsFragment fragment = new LogsFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_CONTAINER_ID, container.getId());
+        final String rancher_access_key = "";
+        final String rancher_secret_key = "";
 
+        Authenticator.setDefault(new Authenticator() {
+            protected PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication(rancher_access_key, rancher_secret_key.toCharArray());
+            }
+        });
+
+        // Parse the data
         try {
-            String logsUrl = container.getActions().getString("logs");
-            args.putString(ARG_LOGS_URL, logsUrl);
-        } catch (JSONException e) {
-            // Let it go
-        }
+            // Create client and connect
+            WebSocket socket = new WebSocketFactory().createSocket(url);
+            socket.addHeader("Authorization", "Bearer " + token);
+            socket.addListener(new WebSocketListener() {
+                @Override
+                public void onStateChanged(WebSocket websocket, WebSocketState newState) throws Exception {
+                    System.out.println("New state: " + newState.toString());
+                }
 
-        fragment.setArguments(args);
-        return fragment;
-    }
+                @Override
+                public void onConnected(WebSocket websocket, Map<String, List<String>> headers) throws Exception {
+                    System.out.println("Connected!");
+                }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mLogsUrl = getArguments().getString(ARG_LOGS_URL);
-            mContainerId = getArguments().getString(ARG_CONTAINER_ID);
-        }
+                @Override
+                public void onConnectError(WebSocket websocket, WebSocketException cause) throws Exception {
+                    System.out.println("Connect error: " + cause.getMessage());
+                }
 
-        if (mLogsUrl != null) {
-            new LogsAPI().execute(mLogsUrl);
-        } else {
-            Toast.makeText(getContext(), "Failed to fetch logs", Toast.LENGTH_LONG).show();
-        }
-    }
+                @Override
+                public void onDisconnected(WebSocket websocket, WebSocketFrame serverCloseFrame, WebSocketFrame clientCloseFrame, boolean closedByServer) throws Exception {
+                    System.out.println("Disconnected. Closed by server = " + closedByServer);
+                }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_logs, container, false);
-        logOutput = (TextView) view.findViewById(R.id.log_output);
+                @Override
+                public void onFrame(WebSocket websocket, WebSocketFrame frame) throws Exception {
+                    System.out.println("Frame: " + frame.getPayloadText());
+                }
 
-        return view;
-    }
+                @Override
+                public void onContinuationFrame(WebSocket websocket, WebSocketFrame frame) throws Exception {
+                    System.out.println("More frame: " + frame.getPayloadText());
+                }
 
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onLogsFragmentInteraction(uri);
-        }
-    }
+                @Override
+                public void onTextFrame(WebSocket websocket, WebSocketFrame frame) throws Exception {
+                    System.out.println("Text frame!");
+                }
 
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnLogsFragmentInteractionListener) {
-            mListener = (OnLogsFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnLogsFragmentInteractionListener");
-        }
-    }
+                @Override
+                public void onBinaryFrame(WebSocket websocket, WebSocketFrame frame) throws Exception {
+                    System.out.println("Binary frame: " + frame.getPayloadText());
+                }
 
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
-//        logsClient.close();
-    }
+                @Override
+                public void onCloseFrame(WebSocket websocket, WebSocketFrame frame) throws Exception {
+                    System.out.println("Close frame: " + frame.toString());
+                }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnLogsFragmentInteractionListener {
-        void onLogsFragmentInteraction(Uri uri);
-    }
+                @Override
+                public void onPingFrame(WebSocket websocket, WebSocketFrame frame) throws Exception {
+                    System.out.println("Ping");
+                }
 
-    private class LogsAPI extends AsyncTask<String, Void, JSONObject> {
+                @Override
+                public void onPongFrame(WebSocket websocket, WebSocketFrame frame) throws Exception {
+                    System.out.println("Pong");
+                }
 
-        private static final String TAG = "LogsAPI";
+                @Override
+                public void onTextMessage(WebSocket websocket, String text) throws Exception {
+                    System.out.printf("Text message received: %s\n", text);
+                }
 
-        /**
-         * Perform the API call
-         *
-         * @param params Parameters
-         * @return API Response as string
-         */
-        @Override
-        protected JSONObject doInBackground(String... params) {
-            // Fetch the data
-            String jsonString = API.POST(params[0]);
-            Log.i(TAG, "Received JSON: " + jsonString);
+                @Override
+                public void onBinaryMessage(WebSocket websocket, byte[] binary) throws Exception {
+                    System.out.println("Binary message!");
+                }
 
-            // Parse the data
-            try {
-                return new JSONObject(jsonString);
-            } catch (JSONException e) {
-                Log.e(TAG, "Error processing JSON: " + e.getMessage());
+                @Override
+                public void onSendingFrame(WebSocket websocket, WebSocketFrame frame) throws Exception {
+                    System.out.println("Sending frame: " + frame.getPayloadText());
+                }
+
+                @Override
+                public void onFrameSent(WebSocket websocket, WebSocketFrame frame) throws Exception {
+                    System.out.println("Frame sent: " + frame.getPayloadText());
+                }
+
+                @Override
+                public void onFrameUnsent(WebSocket websocket, WebSocketFrame frame) throws Exception {
+                    System.out.println("Frame unsent: " + frame.getPayloadText());
+                }
+
+                @Override
+                public void onError(WebSocket websocket, WebSocketException cause) throws Exception {
+                    System.out.println("Error: " + cause.getMessage());
+                }
+
+                @Override
+                public void onFrameError(WebSocket websocket, WebSocketException cause, WebSocketFrame frame) throws Exception {
+                    System.out.println("Frame error: " + cause.getMessage());
+                }
+
+                @Override
+                public void onMessageError(WebSocket websocket, WebSocketException cause, List<WebSocketFrame> frames) throws Exception {
+                    System.out.println("Message error: " + cause.getMessage());
+                }
+
+                @Override
+                public void onMessageDecompressionError(WebSocket websocket, WebSocketException cause, byte[] compressed) throws Exception {
+                    System.out.println("Decompression error: " + cause.getMessage());
+                }
+
+                @Override
+                public void onTextMessageError(WebSocket websocket, WebSocketException cause, byte[] data) throws Exception {
+                    System.out.println("Text message error: " + cause.getMessage());
+                }
+
+                @Override
+                public void onSendError(WebSocket websocket, WebSocketException cause, WebSocketFrame frame) throws Exception {
+                    System.out.println("Send error: " + cause.getMessage());
+                }
+
+                @Override
+                public void onUnexpectedError(WebSocket websocket, WebSocketException cause) throws Exception {
+                    System.out.println("Unexpected error: " + cause.getMessage());
+                }
+
+                @Override
+                public void handleCallbackError(WebSocket websocket, Throwable cause) throws Exception {
+                    System.out.println("Callback error: " + cause.getMessage());
+                }
+
+                @Override
+                public void onSendingHandshake(WebSocket websocket, String requestLine, List<String[]> headers) throws Exception {
+                    System.out.println("Sending handshake");
+                }
+            });
+
+            socket.connect();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (OpeningHandshakeException e) {
+            e.printStackTrace();
+
+            // Status line.
+            StatusLine sl = e.getStatusLine();
+            System.out.println("=== Status Line ===");
+            System.out.format("HTTP Version  = %s\n", sl.getHttpVersion());
+            System.out.format("Status Code   = %d\n", sl.getStatusCode());
+            System.out.format("Reason Phrase = %s\n", sl.getReasonPhrase());
+
+            // HTTP headers.
+            Map<String, List<String>> headers = e.getHeaders();
+            System.out.println("=== HTTP Headers ===");
+            for (Map.Entry<String, List<String>> entry : headers.entrySet())
+            {
+                // Header name.
+                String name = entry.getKey();
+
+                // Values of the header.
+                List<String> values = entry.getValue();
+
+                if (values == null || values.size() == 0)
+                {
+                    // Print the name only.
+                    System.out.println(name);
+                    continue;
+                }
+
+                for (String value : values)
+                {
+                    // Print the name and the value.
+                    System.out.format("%s: %s\n", name, value);
+                }
             }
 
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(JSONObject data) {
-            try {
-                // Set headers
-                HashMap<String, String> headers = new HashMap<>();
-                headers.put("Authorization", "Bearer " + data.getString("token"));
-
-                // Set URI
-                URI uri = new URI(data.getString("url"));
-
-                // Create client
-                Log.d(TAG, "Creating websocket connection...");
-                logsClient = new LogsClient(uri, headers);
-                logsClient.connect();
-            } catch (JSONException e) {
-                Log.e(TAG, "Error parsing JSON data: " + e.getMessage());
-            } catch (URISyntaxException e) {
-                Log.e(TAG, String.format(Locale.US, "Invalid URL \"%s\": %s", e.getInput(), e.getMessage()));
-            }
+        } catch (WebSocketException e) {
+            e.printStackTrace();
         }
     }
 
-    private class LogsClient extends RancherWSClient {
-
-        LogsClient(URI serverUri, Map<String, String> headers) {
-            super(serverUri, headers);
-            Log.d("LogsFragment", "Created connection to '" + serverUri.toString() + "'");
-        }
-
-        @Override
-        public void onOpen(ServerHandshake handshakedata) {
-            Log.d("LogsFragment", "Opening connection: " + handshakedata.getHttpStatusMessage());
-        }
-
-        @Override
-        public void onMessage(String message) {
-            Log.d("LogsFragment", "Message received: " + message);
-            if (logOutput != null) {
-                logOutput.append(message);
-            }
-        }
-
-        @Override
-        public void onClose(int code, String reason, boolean remote) {
-            Log.d("LogsFragment", "Closing connection with " + code + ": " + reason);
-        }
-
-        @Override
-        public void onError(Exception ex) {
-            Log.e("LogsFragment", "WebSocket error: " + ex.getMessage());
-        }
-
-    }
 }
