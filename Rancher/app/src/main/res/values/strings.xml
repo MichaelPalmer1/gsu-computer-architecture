@@ -9,14 +9,11 @@
     <string name="action_services">Services</string>
     <string name="action_hosts">Hosts</string>
     <string name="action_containers">Containers</string>
-    <string name="action_logs">Logs</string>
     <string name="title_activity_settings">Settings</string>
 
     <!-- Strings related to Settings -->
     <string name="pref_header_general">General</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="unknown">Unknown</string>
     <string name="action_scale">Scale</string>
     <string name="one">1</string>
