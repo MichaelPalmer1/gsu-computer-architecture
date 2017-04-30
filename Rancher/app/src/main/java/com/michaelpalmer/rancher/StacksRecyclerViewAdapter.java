@@ -69,6 +69,10 @@ public class StacksRecyclerViewAdapter extends RecyclerView.Adapter<StacksRecycl
                 holder.mStateView.setBackgroundColor(mContext.getResources().getColor(R.color.colorInactive));
                 break;
 
+            case "degraded":
+                holder.mStateView.setBackgroundColor(mContext.getResources().getColor(R.color.colorUnhealthy));
+                break;
+
             default:
                 holder.mStateView.setBackgroundColor(Color.WHITE);
         }

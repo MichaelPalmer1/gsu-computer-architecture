@@ -5,8 +5,8 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -29,7 +29,7 @@ import java.util.Locale;
  * Activities containing this fragment MUST implement the {@link OnStackListFragmentInteractionListener}
  * interface.
  */
-public class StacksListFragment extends Fragment {
+public class StacksListFragment extends Fragment implements View.OnClickListener {
 
     private static final String ARG_PROJECT_ID = "project-id";
     private OnStackListFragmentInteractionListener mListener;
@@ -54,11 +54,12 @@ public class StacksListFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        new StacksAPI().execute();
 
         if (getArguments() != null) {
             mProjectId = getArguments().getString(ARG_PROJECT_ID);
         }
+
+        new StacksAPI().execute(mProjectId);
     }
 
     @Override
@@ -66,16 +67,15 @@ public class StacksListFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_stack_list, container, false);
 
+        FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.add_stack);
+        fab.setOnClickListener(this);
+
         // Set the adapter
-        if (view instanceof RecyclerView) {
-            Context context = view.getContext();
-            recyclerView = (RecyclerView) view;
-            recyclerView.setLayoutManager(new LinearLayoutManager(context));
-            recyclerView.setAdapter(new StacksRecyclerViewAdapter(getContext(), Stack.ITEMS, mListener));
-        }
+        recyclerView = (RecyclerView) view.findViewById(R.id.stack_list_recyclerview);
+        recyclerView.setAdapter(new StacksRecyclerViewAdapter(getContext(), Stack.ITEMS, mListener));
+
         return view;
     }
-
 
     @Override
     public void onAttach(Context context) {
@@ -94,6 +94,15 @@ public class StacksListFragment extends Fragment {
         mListener = null;
     }
 
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.add_stack:
+                // Go to create stack activity
+                break;
+        }
+    }
+
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
@@ -108,7 +117,7 @@ public class StacksListFragment extends Fragment {
         void onStackListFragmentInteraction(Stack item);
     }
 
-    private class StacksAPI extends AsyncTask<Void, Void, List<Stack>> {
+    private class StacksAPI extends AsyncTask<String, Void, List<Stack>> {
 
         private static final String TAG = "StacksAPI";
 
@@ -119,7 +128,7 @@ public class StacksListFragment extends Fragment {
          * @return API Response as string
          */
         @Override
-        protected List<Stack> doInBackground(Void... params) {
+        protected List<Stack> doInBackground(String... params) {
             return fetchItems();
         }
 

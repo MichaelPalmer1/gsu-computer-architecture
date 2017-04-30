@@ -3,6 +3,7 @@ package com.michaelpalmer.rancher;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -26,7 +27,7 @@ import java.util.List;
  * Activities containing this fragment MUST implement the {@link OnServiceListFragmentInteractionListener}
  * interface.
  */
-public class ServicesListFragment extends Fragment {
+public class ServicesListFragment extends Fragment implements View.OnClickListener {
 
     private static final String ARG_STACK_ID = "stack-id", ARG_SERVICES_URL = "services-url";
     private String mStackId = null, mServicesUrl = null;
@@ -70,11 +71,13 @@ public class ServicesListFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_service_list, container, false);
 
+        FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.add_service);
+        fab.setOnClickListener(this);
+
         // Set the adapter
-        if (view instanceof RecyclerView) {
-            recyclerView = (RecyclerView) view;
-            recyclerView.setAdapter(new ServicesRecyclerViewAdapter(getContext(), Service.ITEMS, mListener));
-        }
+        recyclerView = (RecyclerView) view.findViewById(R.id.service_list_recyclerview);
+        recyclerView.setAdapter(new ServicesRecyclerViewAdapter(getContext(), Service.ITEMS, mListener));
+
         return view;
     }
 
@@ -93,6 +96,15 @@ public class ServicesListFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.add_service:
+                // Go to create service activity
+                break;
+        }
     }
 
     /**
