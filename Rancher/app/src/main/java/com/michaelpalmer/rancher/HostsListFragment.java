@@ -6,7 +6,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.LinearLayoutManager;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,7 +14,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.michaelpalmer.rancher.schema.Host;
-import com.michaelpalmer.rancher.schema.Stack;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -30,12 +29,13 @@ import java.util.Locale;
  * Activities containing this fragment MUST implement the {@link OnHostsListFragmentInteractionListener}
  * interface.
  */
-public class HostsListFragment extends Fragment {
+public class HostsListFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
 
     private static final String ARG_PROJECT_ID = "project-id";
     private OnHostsListFragmentInteractionListener mListener;
     private RecyclerView recyclerView;
     private String mProjectId = "1a5";
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -52,10 +52,16 @@ public class HostsListFragment extends Fragment {
         return fragment;
     }
 
+    /**
+     * Load the hosts
+     */
+    private void loadHosts() {
+        new HostsAPI().execute(mProjectId);
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        new HostsAPI().execute();
 
         if (getArguments() != null) {
             mProjectId = getArguments().getString(ARG_PROJECT_ID);
@@ -68,11 +74,16 @@ public class HostsListFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_host_list, container, false);
 
         // Set the adapter
-        if (view instanceof RecyclerView) {
-            Context context = view.getContext();
-            recyclerView = (RecyclerView) view;
-            recyclerView.setAdapter(new HostsRecyclerViewAdapter(getContext(), Host.ITEMS, mListener));
-        }
+        recyclerView = (RecyclerView) view.findViewById(R.id.list);
+        recyclerView.setAdapter(new HostsRecyclerViewAdapter(getContext(), Host.ITEMS, mListener));
+
+        // Setup swipe refresh
+        swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_refresh);
+        swipeRefreshLayout.setOnRefreshListener(this);
+
+        // Load the hosts
+        loadHosts();
+
         return view;
     }
 
@@ -94,6 +105,11 @@ public class HostsListFragment extends Fragment {
         mListener = null;
     }
 
+    @Override
+    public void onRefresh() {
+        loadHosts();
+    }
+
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
@@ -104,9 +120,17 @@ public class HostsListFragment extends Fragment {
         void onHostsListFragmentInteraction(Host item);
     }
 
-    private class HostsAPI extends AsyncTask<Void, Void, List<Host>> {
+    private class HostsAPI extends AsyncTask<String, Void, List<Host>> {
 
         private static final String TAG = "HostsAPI";
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            if (!swipeRefreshLayout.isRefreshing()) {
+                swipeRefreshLayout.setRefreshing(true);
+            }
+        }
 
         /**
          * Perform the API call
@@ -115,7 +139,7 @@ public class HostsListFragment extends Fragment {
          * @return API Response as string
          */
         @Override
-        protected List<Host> doInBackground(Void... params) {
+        protected List<Host> doInBackground(String... params) {
             return fetchItems();
         }
 
@@ -123,6 +147,7 @@ public class HostsListFragment extends Fragment {
         protected void onPostExecute(List<Host> items) {
             Host.ITEMS = items;
             recyclerView.setAdapter(new HostsRecyclerViewAdapter(getContext(), Host.ITEMS, mListener));
+            swipeRefreshLayout.setRefreshing(false);
         }
 
         private List<Host> fetchItems() {

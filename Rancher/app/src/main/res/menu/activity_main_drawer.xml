@@ -4,7 +4,7 @@
     <item
         android:id="@+id/nav_stacks"
         android:icon="@drawable/ic_list_black"
-        android:checked="false"
+        android:checked="true"
         android:title="@string/action_stacks"/>
     <item
         android:id="@+id/nav_hosts"

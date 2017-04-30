@@ -1,12 +1,18 @@
 package com.michaelpalmer.rancher;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -26,12 +32,15 @@ import java.util.List;
  * Activities containing this fragment MUST implement the {@link OnContainerListFragmentInteractionListener}
  * interface.
  */
-public class ContainerListFragment extends Fragment {
+public class ContainerListFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
 
     private OnContainerListFragmentInteractionListener mListener;
     private static final String ARG_SERVICE_ID = "service-id", ARG_CONTAINERS_URL = "services-url";
     private String mServiceId = null, mContainersUrl = null;
     private RecyclerView recyclerView;
+    private Menu mOptionsMenu;
+    private Service service;
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     public static ContainerListFragment newInstance(Service service) {
         ContainerListFragment fragment = new ContainerListFragment();
@@ -43,7 +52,15 @@ public class ContainerListFragment extends Fragment {
             // Let it go
         }
         fragment.setArguments(args);
+        fragment.service = service;
         return fragment;
+    }
+
+    /**
+     * Load the containers
+     */
+    private void loadContainers() {
+        new ContainersAPI().execute(mContainersUrl);
     }
 
     @Override
@@ -55,7 +72,7 @@ public class ContainerListFragment extends Fragment {
             mContainersUrl = getArguments().getString(ARG_CONTAINERS_URL);
         }
 
-        new ContainersAPI().execute(mContainersUrl);
+        setHasOptionsMenu(true);
     }
 
     @Override
@@ -64,11 +81,114 @@ public class ContainerListFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_container_list, container, false);
 
         // Set the adapter
-        if (view instanceof RecyclerView) {
-            recyclerView = (RecyclerView) view;
-            recyclerView.setAdapter(new ContainerRecyclerViewAdapter(getContext(), Container.ITEMS, mListener));
-        }
+        recyclerView = (RecyclerView) view.findViewById(R.id.list);
+        recyclerView.setAdapter(new ContainerRecyclerViewAdapter(getContext(), Container.ITEMS, mListener));
+
+        // Setup swipe refresh
+        swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_refresh);
+        swipeRefreshLayout.setOnRefreshListener(this);
+
+        // Load the containers
+        loadContainers();
+
         return view;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.menu_container, menu);
+        mOptionsMenu = menu;
+        updateOptionsMenu();
+    }
+
+    private void updateOptionsMenu() {
+        switch (service.getState()) {
+            case "active":
+                mOptionsMenu.findItem(R.id.action_start).setVisible(false).setEnabled(false);
+                mOptionsMenu.findItem(R.id.action_restart).setVisible(true).setEnabled(true);
+                mOptionsMenu.findItem(R.id.action_stop).setVisible(true).setEnabled(true);
+                break;
+
+            case "inactive":
+                mOptionsMenu.findItem(R.id.action_start).setVisible(true).setEnabled(true);
+                mOptionsMenu.findItem(R.id.action_restart).setVisible(false).setEnabled(false);
+                mOptionsMenu.findItem(R.id.action_stop).setVisible(false).setEnabled(false);
+                break;
+
+            default:
+                mOptionsMenu.findItem(R.id.action_start).setVisible(false).setEnabled(false);
+                mOptionsMenu.findItem(R.id.action_restart).setVisible(false).setEnabled(false);
+                mOptionsMenu.findItem(R.id.action_stop).setVisible(false).setEnabled(false);
+        }
+
+        // Actions not yet supported
+        mOptionsMenu.findItem(R.id.action_edit).setVisible(false).setEnabled(false);
+        mOptionsMenu.findItem(R.id.action_delete).setVisible(false).setEnabled(false);
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+        updateOptionsMenu();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_start:
+                // Start service
+                return true;
+
+            case R.id.action_restart:
+                new AlertDialog.Builder(getContext())
+                        .setTitle("Restart Service")
+                        .setMessage("Are you sure you want to restart " + service.getName() + "?")
+                        .setIcon(R.drawable.ic_restart_black)
+                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                Log.d("ServiceActions", "Restarting service " + service.getName());
+                            }
+                        })
+                        .setNegativeButton(android.R.string.no, null)
+                        .show();
+                return true;
+
+            case R.id.action_stop:
+                new AlertDialog.Builder(getContext())
+                        .setTitle("Stop Service")
+                        .setMessage("Are you sure you want to stop " + service.getName() + "?")
+                        .setIcon(R.drawable.ic_stop_black)
+                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                Log.d("ServiceActions", "Stopping service " + service.getName());
+                            }
+                        })
+                        .setNegativeButton(android.R.string.no, null)
+                        .show();
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void performServiceAction(String action) {
+        try {
+            String url = service.getActions().optString(action);
+            if (url == null) {
+                throw new NullPointerException();
+            }
+            new ServiceActionsAPI().execute(url, action);
+
+        } catch (Exception e) {
+            new AlertDialog.Builder(getContext())
+                    .setMessage("Failed to " + action + " service.")
+                    .setPositiveButton(android.R.string.ok, null)
+                    .show();
+        }
     }
 
     @Override
@@ -86,6 +206,11 @@ public class ContainerListFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    @Override
+    public void onRefresh() {
+        loadContainers();
     }
 
     /**
@@ -106,6 +231,14 @@ public class ContainerListFragment extends Fragment {
 
         private static final String TAG = "ContainersAPI";
 
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            if (!swipeRefreshLayout.isRefreshing()) {
+                swipeRefreshLayout.setRefreshing(true);
+            }
+        }
+
         /**
          * Perform the API call
          *
@@ -121,6 +254,7 @@ public class ContainerListFragment extends Fragment {
         protected void onPostExecute(List<Container> items) {
             Container.ITEMS = items;
             recyclerView.setAdapter(new ContainerRecyclerViewAdapter(getContext(), Container.ITEMS, mListener));
+            swipeRefreshLayout.setRefreshing(false);
         }
 
         private List<Container> fetchItems(String url) {
@@ -168,6 +302,48 @@ public class ContainerListFragment extends Fragment {
                 }
             } catch (JSONException e) {
                 Log.e(TAG, "JSON error encountered while processing data: " + e.getMessage());
+            }
+        }
+    }
+
+    public class ServiceActionsAPI extends AsyncTask<String, Void, JSONObject> {
+
+        private static final String TAG = "ServiceActionsAPI";
+
+        private String action;
+
+        /**
+         * Perform the API call
+         *
+         * @param params Parameters
+         * @return API Response as string
+         */
+        @Override
+        protected JSONObject doInBackground(String... params) {
+            // Save action
+            action = params[1];
+
+            // Fetch the data
+            String jsonString = API.POST(params[0]);
+            Log.i(TAG, "Received JSON: " + jsonString);
+
+            // Parse the data
+            try {
+                return new JSONObject(jsonString);
+            } catch (JSONException e) {
+                Log.e(TAG, "Error processing JSON: " + e.getMessage());
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(JSONObject service) {
+            if (service == null) {
+                new AlertDialog.Builder(getContext())
+                        .setMessage("Unable to " + action + " service")
+                        .setPositiveButton(android.R.string.ok, null)
+                        .show();
             }
         }
     }

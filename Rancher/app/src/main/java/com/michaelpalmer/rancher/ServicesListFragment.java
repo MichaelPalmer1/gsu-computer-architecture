@@ -5,6 +5,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -27,12 +28,13 @@ import java.util.List;
  * Activities containing this fragment MUST implement the {@link OnServiceListFragmentInteractionListener}
  * interface.
  */
-public class ServicesListFragment extends Fragment implements View.OnClickListener {
+public class ServicesListFragment extends Fragment implements View.OnClickListener, SwipeRefreshLayout.OnRefreshListener {
 
     private static final String ARG_STACK_ID = "stack-id", ARG_SERVICES_URL = "services-url";
     private String mStackId = null, mServicesUrl = null;
     private OnServiceListFragmentInteractionListener mListener;
     private RecyclerView recyclerView;
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -54,6 +56,13 @@ public class ServicesListFragment extends Fragment implements View.OnClickListen
         return fragment;
     }
 
+    /**
+     * Load the services
+     */
+    private void loadServices() {
+        new ServicesAPI().execute(mServicesUrl);
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,8 +71,6 @@ public class ServicesListFragment extends Fragment implements View.OnClickListen
             mStackId = getArguments().getString(ARG_STACK_ID);
             mServicesUrl = getArguments().getString(ARG_SERVICES_URL);
         }
-
-        new ServicesAPI().execute(mServicesUrl);
     }
 
     @Override
@@ -75,8 +82,15 @@ public class ServicesListFragment extends Fragment implements View.OnClickListen
         fab.setOnClickListener(this);
 
         // Set the adapter
-        recyclerView = (RecyclerView) view.findViewById(R.id.service_list_recyclerview);
+        recyclerView = (RecyclerView) view.findViewById(R.id.list);
         recyclerView.setAdapter(new ServicesRecyclerViewAdapter(getContext(), Service.ITEMS, mListener));
+
+        // Setup swipe refresh
+        swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_refresh);
+        swipeRefreshLayout.setOnRefreshListener(this);
+
+        // Load the services
+        loadServices();
 
         return view;
     }
@@ -107,6 +121,11 @@ public class ServicesListFragment extends Fragment implements View.OnClickListen
         }
     }
 
+    @Override
+    public void onRefresh() {
+        loadServices();
+    }
+
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
@@ -120,6 +139,14 @@ public class ServicesListFragment extends Fragment implements View.OnClickListen
     private class ServicesAPI extends AsyncTask<String, Void, List<Service>> {
 
         private static final String TAG = "ServicesAPI";
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            if (!swipeRefreshLayout.isRefreshing()) {
+                swipeRefreshLayout.setRefreshing(true);
+            }
+        }
 
         /**
          * Perform the API call
@@ -136,6 +163,7 @@ public class ServicesListFragment extends Fragment implements View.OnClickListen
         protected void onPostExecute(List<Service> items) {
             Service.ITEMS = items;
             recyclerView.setAdapter(new ServicesRecyclerViewAdapter(getContext(), Service.ITEMS, mListener));
+            swipeRefreshLayout.setRefreshing(false);
         }
 
         private List<Service> fetchItems(String url) {

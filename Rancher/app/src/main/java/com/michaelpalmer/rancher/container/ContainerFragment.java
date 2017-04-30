@@ -129,25 +129,23 @@ public class ContainerFragment extends Fragment {
                 mOptionsMenu.findItem(R.id.action_start).setVisible(false).setEnabled(false);
                 mOptionsMenu.findItem(R.id.action_restart).setVisible(true).setEnabled(true);
                 mOptionsMenu.findItem(R.id.action_stop).setVisible(true).setEnabled(true);
-                mOptionsMenu.findItem(R.id.action_edit).setVisible(true).setEnabled(true);
-                mOptionsMenu.findItem(R.id.action_delete).setVisible(true).setEnabled(true);
                 break;
 
             case "stopped":
                 mOptionsMenu.findItem(R.id.action_start).setVisible(true).setEnabled(true);
                 mOptionsMenu.findItem(R.id.action_restart).setVisible(false).setEnabled(false);
                 mOptionsMenu.findItem(R.id.action_stop).setVisible(false).setEnabled(false);
-                mOptionsMenu.findItem(R.id.action_edit).setVisible(true).setEnabled(true);
-                mOptionsMenu.findItem(R.id.action_delete).setVisible(true).setEnabled(true);
                 break;
 
             default:
                 mOptionsMenu.findItem(R.id.action_start).setVisible(false).setEnabled(false);
                 mOptionsMenu.findItem(R.id.action_restart).setVisible(false).setEnabled(false);
                 mOptionsMenu.findItem(R.id.action_stop).setVisible(false).setEnabled(false);
-                mOptionsMenu.findItem(R.id.action_edit).setVisible(false).setEnabled(false);
-                mOptionsMenu.findItem(R.id.action_delete).setVisible(false).setEnabled(false);
         }
+
+        // Actions not yet supported
+        mOptionsMenu.findItem(R.id.action_edit).setVisible(false).setEnabled(false);
+        mOptionsMenu.findItem(R.id.action_delete).setVisible(false).setEnabled(false);
     }
 
     @Override
@@ -204,28 +202,23 @@ public class ContainerFragment extends Fragment {
                         .show();
                 return true;
 
-            case R.id.action_edit:
-                // Go to edit container activity
-                return true;
-
-            case R.id.action_delete:
-                new AlertDialog.Builder(getContext())
-                        .setTitle("Delete Container")
-                        .setMessage("Are you sure you want to delete " + container.getName() + "?")
-                        .setIcon(R.drawable.ic_delete_black)
-                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                Log.d("ContainerActions", "Deleting container " + container.getName());
-                            }
-                        })
-                        .setNegativeButton(android.R.string.no, null)
-                        .show();
-                return true;
-
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void performContainerAction(String action) {
+        String url = container.getActions().optString(action);
+
+        if (url == null) {
+            new AlertDialog.Builder(getContext())
+                    .setMessage("Failed to " + action + " container.")
+                    .setPositiveButton(android.R.string.ok, null)
+                    .show();
+            return;
+        }
+
+        new ContainerActionsAPI().execute(url, action);
     }
 
     public void onButtonPressed(Uri uri) {
@@ -379,6 +372,71 @@ public class ContainerFragment extends Fragment {
         @Override
         protected void onPostExecute(JSONObject container) {
             try {
+                // Get relevant data
+                String id = container.getString("id");
+                String name = container.getString("name");
+                String state = container.getString("state");
+                String description = container.getString("description");
+                String healthState = container.getString("healthState");
+                JSONObject links = container.getJSONObject("links");
+                JSONObject actions = container.getJSONObject("actions");
+
+                if (description == null) {
+                    description = "";
+                }
+
+                // Instantiate container
+                setContainer(
+                        new Container(id, name, state, description, healthState, links, actions, container)
+                );
+            } catch (JSONException e) {
+                Log.e(TAG, "JSON error encountered while processing data: " + e.getMessage());
+            }
+        }
+    }
+
+    public class ContainerActionsAPI extends AsyncTask<String, Void, JSONObject> {
+
+        private static final String TAG = "ContainerActionsAPI";
+
+        private String action;
+
+        /**
+         * Perform the API call
+         *
+         * @param params Parameters
+         * @return API Response as string
+         */
+        @Override
+        protected JSONObject doInBackground(String... params) {
+            // Save action
+            action = params[1];
+
+            // Fetch the data
+            String jsonString = API.POST(params[0]);
+            Log.i(TAG, "Received JSON: " + jsonString);
+
+            // Parse the data
+            try {
+                return new JSONObject(jsonString);
+            } catch (JSONException e) {
+                Log.e(TAG, "Error processing JSON: " + e.getMessage());
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(JSONObject container) {
+            try {
+                if (container == null) {
+                    new AlertDialog.Builder(getContext())
+                            .setMessage("Unable to stop container")
+                            .setPositiveButton(android.R.string.ok, null)
+                            .show();
+                    return;
+                }
+
                 // Get relevant data
                 String id = container.getString("id");
                 String name = container.getString("name");

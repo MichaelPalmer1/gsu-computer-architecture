@@ -60,4 +60,17 @@ public class BaseSchema {
     public boolean hasProperty(String key) {
         return dataMap.containsKey(key);
     }
+
+    /**
+     * Return this objects actions
+     *
+     * @return JSON object of actions
+     */
+    public JSONObject getActions() {
+        try {
+            return (JSONObject) getProperty("actions");
+        } catch (Exception e) {
+            return null;
+        }
+    }
 }
