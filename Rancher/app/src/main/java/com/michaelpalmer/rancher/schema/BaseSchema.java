@@ -81,4 +81,17 @@ public class BaseSchema {
             return null;
         }
     }
+
+    /**
+     * Retrieve the type of this resource
+     *
+     * @return Resource type
+     */
+    public String getType() {
+        try {
+            return (String) getProperty("type");
+        } catch (Exception e) {
+            return null;
+        }
+    }
 }

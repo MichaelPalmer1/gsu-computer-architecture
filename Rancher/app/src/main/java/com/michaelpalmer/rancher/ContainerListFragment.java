@@ -446,9 +446,27 @@ class ServiceActionsAPI extends RunAction.ActionsAPI {
     protected JSONObject doInBackground(String... params) {
         // Save action
         action = params[1];
+        JSONObject data = null;
+
+        // If this is a restart, build the restart strategy
+        if (action.equals(RunAction.ACTION_RESTART)) {
+            try {
+                // Build restart strategy
+                JSONObject restartStrategy = new JSONObject();
+                restartStrategy.put("batchSize", 1);
+                restartStrategy.put("intervalMillis", 2000);
+
+                // Add to data
+                data = new JSONObject();
+                data.put("rollingRestartStrategy", restartStrategy);
+            } catch (JSONException e) {
+                data = null;
+                Log.e(TAG, "JSON error when building restart strategy: " + e.getMessage());
+            }
+        }
 
         // Fetch the data
-        String jsonString = API.POST(params[0]);
+        String jsonString = API.POST(params[0], data);
         Log.i(TAG, "Received JSON: " + jsonString);
 
         // Parse the data
