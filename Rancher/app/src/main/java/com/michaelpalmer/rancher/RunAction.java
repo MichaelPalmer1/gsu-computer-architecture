@@ -30,6 +30,12 @@ public class RunAction {
     private RunActionCallback actionCallback;
 
     public static final String ACTION_START = "start", ACTION_STOP = "stop", ACTION_RESTART = "restart";
+    private static final String
+            STATE_STOPPED = "stopped",
+            STATE_STOPPING = "stopping",
+            STATE_RUNNING = "running",
+            STATE_STARTING = "starting",
+            STATE_RESTARTING = "restarting";
 
     public interface RunActionCallback {
         void onActionComplete();
@@ -41,9 +47,9 @@ public class RunAction {
                      ActionsAPI actionApi, Class pollApi, RunActionCallback actionCallback) {
         // Validate action
         switch (action) {
-            case "start": break;
-            case "stop": break;
-            case "restart": break;
+            case ACTION_START: break;
+            case ACTION_STOP: break;
+            case ACTION_RESTART: break;
             default: throw new IllegalArgumentException("Invalid action");
         }
 
@@ -98,15 +104,15 @@ public class RunAction {
      */
     private boolean handleStart(String state) {
         switch (state) {
-            case "stopped":
+            case STATE_STOPPED:
                 progressDialog.setProgress(25);
                 break;
 
-            case "starting":
+            case STATE_STARTING:
                 progressDialog.setProgress(50);
                 break;
 
-            case "running":
+            case STATE_RUNNING:
                 Log.d("RunActionHandler", "Resource has completed " + action);
                 progressDialog.setProgress(100);
                 progressDialog.dismiss();
@@ -120,17 +126,17 @@ public class RunAction {
 
     private boolean handleStop(String state) {
         switch (state) {
-            case "running":
+            case STATE_RUNNING:
                 if (progressDialog.getProgress() < 25) {
                     progressDialog.setProgress(25);
                 }
                 break;
 
-            case "stopping":
+            case STATE_STOPPING:
                 progressDialog.setProgress(50);
                 break;
 
-            case "stopped":
+            case STATE_STOPPED:
                 Log.d("RunActionHandler", "Resource has completed " + action);
                 progressDialog.setProgress(100);
                 progressDialog.dismiss();
@@ -144,23 +150,23 @@ public class RunAction {
 
     private boolean handleRestart(String state) {
         switch (state) {
-            case "restarting":
+            case STATE_RESTARTING:
                 progressDialog.setProgress(10);
                 break;
 
-            case "stopping":
+            case STATE_STOPPING:
                 progressDialog.setProgress(25);
                 break;
 
-            case "stopped":
+            case STATE_STOPPED:
                 progressDialog.setProgress(50);
                 break;
 
-            case "starting":
+            case STATE_STARTING:
                 progressDialog.setProgress(75);
                 break;
 
-            case "running":
+            case STATE_RUNNING:
                 Log.d("RunActionHandler", "Resource has completed " + action);
                 progressDialog.setProgress(100);
                 progressDialog.dismiss();
@@ -203,13 +209,13 @@ public class RunAction {
 
             // Update progress
             switch (action) {
-                case "start":
+                case ACTION_START:
                     return handleStart(state);
 
-                case "stop":
+                case ACTION_STOP:
                     return handleStop(state);
 
-                case "restart":
+                case ACTION_RESTART:
                     return handleRestart(state);
 
                 default:
@@ -225,15 +231,15 @@ public class RunAction {
 
         private boolean doExitCheck(String state) {
             switch (action) {
-                case "start":
-                    return state.equals("running");
+                case ACTION_START:
+                    return state.equals(STATE_RUNNING);
 
-                case "stop":
-                    return state.equals("stopped") || state.equals("starting") ||
-                            (state.equals("running") && progressDialog.getProgress() > 25);
+                case ACTION_STOP:
+                    return state.equals(STATE_STOPPED) || state.equals(STATE_STARTING) ||
+                            (state.equals(STATE_RUNNING) && progressDialog.getProgress() > 25);
 
-                case "restart":
-                    return state.equals("running");
+                case ACTION_RESTART:
+                    return state.equals(STATE_RUNNING);
 
                 default:
                     return false;
