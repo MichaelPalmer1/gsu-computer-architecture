@@ -107,7 +107,7 @@ public class RunAction {
 
             case ACTION_DEACTIVATE:
                 progressDialog.setIcon(R.drawable.ic_start_black);
-                progressDialog.setTitle("Activating " + resource.getName());
+                progressDialog.setTitle("Deactivating " + resource.getName());
                 break;
         }
     }
