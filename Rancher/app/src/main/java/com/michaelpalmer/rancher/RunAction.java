@@ -13,6 +13,7 @@ import com.michaelpalmer.rancher.schema.BaseSchema;
 
 import org.json.JSONObject;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -28,6 +29,8 @@ public class RunAction {
     private ActionsAPI actionApi;
     private Class pollApi;
     private RunActionCallback actionCallback;
+    private Class<?>[] parameterTypes;
+    private Object[] parameterValues;
 
     public static final String
             ACTION_START = "start",
@@ -37,6 +40,8 @@ public class RunAction {
             ACTION_DEACTIVATE = "deactivate";
     private static final String
             STATE_ACTIVE = "active",
+            STATE_ACTIVATING = "activating",
+            STATE_DEACTIVATING = "deactivating",
             STATE_INACTIVE = "inactive",
             STATE_STOPPED = "stopped",
             STATE_STOPPING = "stopping",
@@ -52,11 +57,14 @@ public class RunAction {
 
     public RunAction(Context context, BaseSchema resource, String action, String url,
                      ActionsAPI actionApi, Class pollApi, RunActionCallback actionCallback) {
+
         // Validate action
         switch (action) {
             case ACTION_START: break;
             case ACTION_STOP: break;
             case ACTION_RESTART: break;
+            case ACTION_ACTIVATE: break;
+            case ACTION_DEACTIVATE: break;
             default: throw new IllegalArgumentException("Invalid action");
         }
 
@@ -91,7 +99,25 @@ public class RunAction {
                 progressDialog.setIcon(R.drawable.ic_restart_black);
                 progressDialog.setTitle("Restarting " + resource.getName());
                 break;
+
+            case ACTION_ACTIVATE:
+                progressDialog.setIcon(R.drawable.ic_start_black);
+                progressDialog.setTitle("Activating " + resource.getName());
+                break;
+
+            case ACTION_DEACTIVATE:
+                progressDialog.setIcon(R.drawable.ic_start_black);
+                progressDialog.setTitle("Activating " + resource.getName());
+                break;
         }
+    }
+
+    public void setParameterTypes(Class<?>... parameterTypes) {
+        this.parameterTypes = parameterTypes;
+    }
+
+    public void setParameterValues(Object... values) {
+        this.parameterValues = values;
     }
 
     /**
@@ -198,6 +224,62 @@ public class RunAction {
     }
 
     /**
+     * Activate action handler
+     *
+     * @param state Current state
+     * @return True if complete, otherwise false
+     */
+    private boolean handleActivate(String state) {
+        switch (state) {
+            case STATE_INACTIVE:
+                progressDialog.setProgress(25);
+                break;
+
+            case STATE_ACTIVATING:
+                progressDialog.setProgress(50);
+                break;
+
+            case STATE_ACTIVE:
+                Log.d("RunActionHandler", "Resource has completed " + action);
+                progressDialog.setProgress(100);
+                progressDialog.dismiss();
+                if (actionCallback != null) {
+                    actionCallback.onActionComplete();
+                }
+                return true;
+        }
+        return false;
+    }
+
+    /**
+     * Deactivate action handler
+     *
+     * @param state Current state
+     * @return True if complete, otherwise false
+     */
+    private boolean handleDeactivate(String state) {
+        switch (state) {
+            case STATE_ACTIVE:
+                progressDialog.setProgress(25);
+                break;
+
+            case STATE_DEACTIVATING:
+                progressDialog.setProgress(50);
+                break;
+
+            case STATE_INACTIVE:
+                Log.d("RunActionHandler", "Resource has completed " + action);
+                progressDialog.setProgress(100);
+                progressDialog.dismiss();
+                if (actionCallback != null) {
+                    actionCallback.onActionComplete();
+                }
+                return true;
+        }
+        return false;
+    }
+
+    /**
      * Handler Callback
      */
     private Handler.Callback callback = new Handler.Callback() {
@@ -240,6 +322,12 @@ public class RunAction {
                 case ACTION_RESTART:
                     return handleRestart(state);
 
+                case ACTION_ACTIVATE:
+                    return handleActivate(state);
+
+                case ACTION_DEACTIVATE:
+                    return handleDeactivate(state);
+
                 default:
                     Log.e("RunActionHandler", "Invalid action \"" + action + "\".");
                     return true;
@@ -265,6 +353,12 @@ public class RunAction {
 
                 case ACTION_RESTART:
                     return state.equals(STATE_RUNNING);
+
+                case ACTION_ACTIVATE:
+                    return state.equals(STATE_ACTIVE);
+
+                case ACTION_DEACTIVATE:
+                    return state.equals(STATE_INACTIVE);
 
                 default:
                     return false;
@@ -332,7 +426,13 @@ public class RunAction {
 
                     // Get the status
                     Log.d("RunActionPoller", "Requesting resource status");
-                    JSONObject object = ((ActionsAPI) pollApi.newInstance()).execute(url).get(10, TimeUnit.SECONDS);
+                    JSONObject object;
+                    if (parameterTypes != null && parameterValues != null) {
+                        object = ((ActionsAPI) pollApi.getConstructor(parameterTypes).newInstance(parameterValues))
+                                .execute(url).get(10, TimeUnit.SECONDS);
+                    } else {
+                        object = ((ActionsAPI) pollApi.newInstance()).execute(url).get(10, TimeUnit.SECONDS);
+                    }
                     Log.d("RunActionPoller", "Received resource status");
 
                     // Verify container was retrieved
@@ -369,6 +469,14 @@ public class RunAction {
                     return;
                 } catch (IllegalAccessException e) {
                     Log.e("RunActionPoller", "Illegal access exception: " + e.getMessage());
+                    exitThread();
+                    return;
+                } catch (NoSuchMethodException e) {
+                    Log.e("RunActionPoller", "No such method: " + e.getMessage());
+                    exitThread();
+                    return;
+                } catch (InvocationTargetException e) {
+                    Log.e("RunActionPoller", "Invocation target error: " + e.getMessage());
                     exitThread();
                     return;
                 }

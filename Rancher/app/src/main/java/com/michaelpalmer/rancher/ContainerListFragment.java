@@ -41,7 +41,7 @@ public class ContainerListFragment extends Fragment implements SwipeRefreshLayou
     private String mHostId = null, mServiceId = null, mContainersUrl = null;
     private RecyclerView recyclerView;
     private Menu mOptionsMenu;
-    private Service service;
+    private static Service service;
     private Host host;
     private SwipeRefreshLayout swipeRefreshLayout;
 
@@ -73,11 +73,24 @@ public class ContainerListFragment extends Fragment implements SwipeRefreshLayou
         return fragment;
     }
 
+    public static void setService(Service service) {
+        ContainerListFragment.service = service;
+    }
+
+    public static Service getService() {
+        return ContainerListFragment.service;
+    }
+
     /**
      * Load the containers
      */
     private void loadContainers() {
-        new ContainersAPI().execute(mContainersUrl);
+        new ContainersAPI(
+                getContext(),
+                recyclerView,
+                swipeRefreshLayout,
+                mListener
+        ).execute(mContainersUrl);
     }
 
     @Override
@@ -151,11 +164,30 @@ public class ContainerListFragment extends Fragment implements SwipeRefreshLayou
         updateOptionsMenu();
     }
 
+    private RunAction.RunActionCallback runActionCallback = new RunAction.RunActionCallback() {
+        @Override
+        public void onActionComplete() {
+            updateOptionsMenu();
+            loadContainers();
+        }
+    };
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        final ServiceActionsAPI actionsAPI = new ServiceActionsAPI(getContext());
         switch (item.getItemId()) {
             case R.id.action_start:
-                // Start service
+                Log.d("ServiceActions", "Activating service " + service.getName());
+                RunAction runAction = new RunAction(
+                        getContext(),
+                        service,
+                        RunAction.ACTION_ACTIVATE,
+                        service.getLinks().optString("self"),
+                        actionsAPI,
+                        ServiceAPI.class,
+                        runActionCallback
+                );
+                runAction.start();
                 return true;
 
             case R.id.action_restart:
@@ -167,6 +199,16 @@ public class ContainerListFragment extends Fragment implements SwipeRefreshLayou
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 Log.d("ServiceActions", "Restarting service " + service.getName());
+                                RunAction runAction = new RunAction(
+                                        getContext(),
+                                        service,
+                                        RunAction.ACTION_RESTART,
+                                        service.getLinks().optString("self"),
+                                        actionsAPI,
+                                        ServiceAPI.class,
+                                        runActionCallback
+                                );
+                                runAction.start();
                             }
                         })
                         .setNegativeButton(android.R.string.no, null)
@@ -175,13 +217,23 @@ public class ContainerListFragment extends Fragment implements SwipeRefreshLayou
 
             case R.id.action_stop:
                 new AlertDialog.Builder(getContext())
-                        .setTitle("Stop Service")
-                        .setMessage("Are you sure you want to stop " + service.getName() + "?")
+                        .setTitle("Deactivate Service")
+                        .setMessage("Are you sure you want to deactivate " + service.getName() + "?")
                         .setIcon(R.drawable.ic_stop_black)
                         .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                Log.d("ServiceActions", "Stopping service " + service.getName());
+                                Log.d("ServiceActions", "Deactivating service " + service.getName());
+                                RunAction runAction = new RunAction(
+                                        getContext(),
+                                        service,
+                                        RunAction.ACTION_DEACTIVATE,
+                                        service.getLinks().optString("self"),
+                                        actionsAPI,
+                                        ServiceAPI.class,
+                                        runActionCallback
+                                );
+                                runAction.start();
                             }
                         })
                         .setNegativeButton(android.R.string.no, null)
@@ -190,22 +242,6 @@ public class ContainerListFragment extends Fragment implements SwipeRefreshLayou
 
             default:
                 return super.onOptionsItemSelected(item);
-        }
-    }
-
-    private void performServiceAction(String action) {
-        try {
-            String url = service.getActions().optString(action);
-            if (url == null) {
-                throw new NullPointerException();
-            }
-            new ServiceActionsAPI().execute(url, action);
-
-        } catch (Exception e) {
-            new AlertDialog.Builder(getContext())
-                    .setMessage("Failed to " + action + " service.")
-                    .setPositiveButton(android.R.string.ok, null)
-                    .show();
         }
     }
 
@@ -244,125 +280,215 @@ public class ContainerListFragment extends Fragment implements SwipeRefreshLayou
     public interface OnContainerListFragmentInteractionListener {
         void onContainerListFragmentInteraction(Container item);
     }
+}
 
-    private class ContainersAPI extends AsyncTask<String, Void, List<Container>> {
+class ServiceAPI extends RunAction.ActionsAPI {
 
-        private static final String TAG = "ContainersAPI";
+    private static final String TAG = "ServiceAPI";
 
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            if (!swipeRefreshLayout.isRefreshing()) {
-                swipeRefreshLayout.setRefreshing(true);
-            }
+    /**
+     * Perform the API call
+     *
+     * @param params Parameters
+     * @return API Response as string
+     */
+    @Override
+    protected JSONObject doInBackground(String... params) {
+        // Fetch the data
+        String jsonString = API.GET(params[0]);
+        Log.i(TAG, "Received JSON: " + jsonString);
+
+        // Parse the data
+        try {
+            return new JSONObject(jsonString);
+        } catch (JSONException e) {
+            Log.e(TAG, "Error processing JSON: " + e.getMessage());
         }
 
-        /**
-         * Perform the API call
-         *
-         * @param params Parameters
-         * @return API Response as string
-         */
-        @Override
-        protected List<Container> doInBackground(String... params) {
-            return fetchItems(params[0]);
-        }
-
-        @Override
-        protected void onPostExecute(List<Container> items) {
-            Container.ITEMS = items;
-            recyclerView.setAdapter(new ContainerRecyclerViewAdapter(getContext(), Container.ITEMS, mListener));
-            swipeRefreshLayout.setRefreshing(false);
-        }
-
-        private List<Container> fetchItems(String url) {
-            List<Container> items = new ArrayList<>();
-
-            // Fetch the data
-            String jsonString = API.GET(url);
-            Log.i(TAG, "Received JSON: " + jsonString);
-
-            // Parse the data
-            parseItems(items, jsonString);
-
-            return items;
-        }
-
-        private void parseItems(List<Container> items, String data) {
-            try {
-                // Get base object
-                JSONObject jsonBaseObject = new JSONObject(data);
-
-                // Get the containers
-                JSONArray containers = jsonBaseObject.getJSONArray("data");
-
-                for (int i = 0; i < containers.length(); i++) {
-                    // Get photo object
-                    JSONObject container = containers.getJSONObject(i);
-
-                    // Get relevant data
-                    String id = container.getString("id");
-                    String name = container.getString("name");
-                    String state = container.getString("state");
-                    String description = container.getString("description");
-                    String healthState = container.getString("healthState");
-                    JSONObject links = container.getJSONObject("links");
-                    JSONObject actions = container.getJSONObject("actions");
-
-                    if (description.equals("null")) {
-                        description = null;
-                    }
-
-                    // Instantiate stack and add to list
-                    Container item = new Container(id, name, state, description, healthState, links, actions,
-                            container);
-                    items.add(item);
-                }
-            } catch (JSONException e) {
-                Log.e(TAG, "JSON error encountered while processing data: " + e.getMessage());
-            }
-        }
+        return null;
     }
 
-    public class ServiceActionsAPI extends AsyncTask<String, Void, JSONObject> {
+    @Override
+    protected void onPostExecute(JSONObject jsonObject) {
+        super.onPostExecute(jsonObject);
+        parseData(jsonObject);
+    }
 
-        private static final String TAG = "ServiceActionsAPI";
+    private void parseData(JSONObject service) {
+        try {
+            // Get relevant data
+            String id = service.getString("id");
+            String name = service.getString("name");
+            String state = service.getString("state");
+            String description = service.getString("description");
+            String healthState = service.getString("healthState");
+            JSONObject links = service.getJSONObject("links");
 
-        private String action;
-
-        /**
-         * Perform the API call
-         *
-         * @param params Parameters
-         * @return API Response as string
-         */
-        @Override
-        protected JSONObject doInBackground(String... params) {
-            // Save action
-            action = params[1];
-
-            // Fetch the data
-            String jsonString = API.POST(params[0]);
-            Log.i(TAG, "Received JSON: " + jsonString);
-
-            // Parse the data
-            try {
-                return new JSONObject(jsonString);
-            } catch (JSONException e) {
-                Log.e(TAG, "Error processing JSON: " + e.getMessage());
+            if (description.equals("null")) {
+                description = null;
             }
 
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(JSONObject service) {
-            if (service == null) {
-                new AlertDialog.Builder(getContext())
-                        .setMessage("Unable to " + action + " service")
-                        .setPositiveButton(android.R.string.ok, null)
-                        .show();
-            }
+            // Instantiate service
+            ContainerListFragment.setService(new Service(id, name, state, description, healthState, links, service));
+        } catch (JSONException e) {
+            Log.e(TAG, "JSON error encountered while processing data: " + e.getMessage());
         }
     }
 }
+
+class ContainersAPI extends RunAction.ActionsAPI {
+
+    private static final String TAG = "ContainersAPI";
+    private Context context;
+    private RecyclerView recyclerView;
+    private SwipeRefreshLayout swipeRefreshLayout;
+    private ContainerListFragment.OnContainerListFragmentInteractionListener mListener;
+
+    public ContainersAPI(Context context, RecyclerView recyclerView, SwipeRefreshLayout swipeRefreshLayout,
+                         ContainerListFragment.OnContainerListFragmentInteractionListener mListener) {
+        this.context = context;
+        this.recyclerView = recyclerView;
+        this.swipeRefreshLayout = swipeRefreshLayout;
+        this.mListener = mListener;
+    }
+
+    @Override
+    protected void onPreExecute() {
+        super.onPreExecute();
+        if (!swipeRefreshLayout.isRefreshing()) {
+            swipeRefreshLayout.setRefreshing(true);
+        }
+    }
+
+    /**
+     * Perform the API call
+     *
+     * @param params Parameters
+     * @return API Response as string
+     */
+    @Override
+    protected JSONObject doInBackground(String... params) {
+        // Fetch the data
+        String jsonString = API.GET(params[0]);
+        Log.i(TAG, "Received JSON: " + jsonString);
+
+        // Parse the data
+        try {
+            return new JSONObject(jsonString);
+        } catch (JSONException e) {
+            Log.e(TAG, "Error processing JSON: " + e.getMessage());
+        }
+
+        return null;
+    }
+
+    @Override
+    protected void onPostExecute(JSONObject jsonObject) {
+        List<Container> items = new ArrayList<>();
+        parseItems(items, jsonObject);
+        Container.ITEMS = items;
+        recyclerView.setAdapter(new ContainerRecyclerViewAdapter(context, Container.ITEMS, mListener));
+        swipeRefreshLayout.setRefreshing(false);
+    }
+
+    private void parseItems(List<Container> items, JSONObject jsonBaseObject) {
+        try {
+            // Get the containers
+            JSONArray containers = jsonBaseObject.getJSONArray("data");
+
+            for (int i = 0; i < containers.length(); i++) {
+                // Get photo object
+                JSONObject container = containers.getJSONObject(i);
+
+                // Get relevant data
+                String id = container.getString("id");
+                String name = container.getString("name");
+                String state = container.getString("state");
+                String description = container.getString("description");
+                String healthState = container.getString("healthState");
+                JSONObject links = container.getJSONObject("links");
+                JSONObject actions = container.getJSONObject("actions");
+
+                if (description.equals("null")) {
+                    description = null;
+                }
+
+                // Instantiate stack and add to list
+                Container item = new Container(id, name, state, description, healthState, links, actions,
+                        container);
+                items.add(item);
+            }
+        } catch (JSONException e) {
+            Log.e(TAG, "JSON error encountered while processing data: " + e.getMessage());
+        }
+    }
+}
+
+class ServiceActionsAPI extends RunAction.ActionsAPI {
+
+    private static final String TAG = "ServiceActionsAPI";
+
+    private String action;
+    private Context context;
+
+    ServiceActionsAPI(Context context) {
+        super();
+        this.context = context;
+    }
+
+    /**
+     * Perform the API call
+     *
+     * @param params Parameters
+     * @return API Response as string
+     */
+    @Override
+    protected JSONObject doInBackground(String... params) {
+        // Save action
+        action = params[1];
+
+        // Fetch the data
+        String jsonString = API.POST(params[0]);
+        Log.i(TAG, "Received JSON: " + jsonString);
+
+        // Parse the data
+        try {
+            return new JSONObject(jsonString);
+        } catch (JSONException e) {
+            Log.e(TAG, "Error processing JSON: " + e.getMessage());
+        }
+
+        return null;
+    }
+
+    @Override
+    protected void onPostExecute(JSONObject service) {
+        if (service == null) {
+            new AlertDialog.Builder(context)
+                    .setMessage("Unable to " + action + " service")
+                    .setPositiveButton(android.R.string.ok, null)
+                    .show();
+            return;
+        }
+
+        try {
+            // Get relevant data
+            String id = service.getString("id");
+            String name = service.getString("name");
+            String state = service.getString("state");
+            String description = service.getString("description");
+            String healthState = service.getString("healthState");
+            JSONObject links = service.getJSONObject("links");
+
+            if (description.equals("null")) {
+                description = null;
+            }
+
+            // Instantiate service
+            ContainerListFragment.setService(new Service(id, name, state, description, healthState, links, service));
+        } catch (JSONException e) {
+            Log.e(TAG, "JSON error encountered while processing data: " + e.getMessage());
+        }
+    }
+}
+
