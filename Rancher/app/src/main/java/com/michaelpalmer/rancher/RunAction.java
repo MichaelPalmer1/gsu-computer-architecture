@@ -29,8 +29,15 @@ public class RunAction {
     private Class pollApi;
     private RunActionCallback actionCallback;
 
-    public static final String ACTION_START = "start", ACTION_STOP = "stop", ACTION_RESTART = "restart";
+    public static final String
+            ACTION_START = "start",
+            ACTION_STOP = "stop",
+            ACTION_RESTART = "restart",
+            ACTION_ACTIVATE = "activate",
+            ACTION_DEACTIVATE = "deactivate";
     private static final String
+            STATE_ACTIVE = "active",
+            STATE_INACTIVE = "inactive",
             STATE_STOPPED = "stopped",
             STATE_STOPPING = "stopping",
             STATE_RUNNING = "running",
@@ -124,6 +131,12 @@ public class RunAction {
         return false;
     }
 
+    /**
+     * Stop action handler
+     *
+     * @param state Current state
+     * @return True if complete, otherwise false
+     */
     private boolean handleStop(String state) {
         switch (state) {
             case STATE_RUNNING:
@@ -148,6 +161,12 @@ public class RunAction {
         return false;
     }
 
+    /**
+     * Restart action handler
+     *
+     * @param state Current state
+     * @return True if complete, otherwise false
+     */
     private boolean handleRestart(String state) {
         switch (state) {
             case STATE_RESTARTING:
@@ -178,6 +197,9 @@ public class RunAction {
         return false;
     }
 
+    /**
+     * Handler Callback
+     */
     private Handler.Callback callback = new Handler.Callback() {
         @Override
         public boolean handleMessage(Message msg) {
@@ -225,6 +247,9 @@ public class RunAction {
         }
     };
 
+    /**
+     * Runnable
+     */
     private Runnable runnable = new Runnable() {
         private final int SLEEP_TIME = 500;
         private final int MAX_CALLS = 240;
