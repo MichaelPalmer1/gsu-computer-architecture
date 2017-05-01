@@ -3,7 +3,6 @@ package com.michaelpalmer.rancher.container;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
@@ -22,6 +21,7 @@ import android.view.ViewGroup;
 
 import com.michaelpalmer.rancher.API;
 import com.michaelpalmer.rancher.R;
+import com.michaelpalmer.rancher.RunAction;
 import com.michaelpalmer.rancher.schema.Container;
 
 import org.json.JSONException;
@@ -52,8 +52,13 @@ public class ContainerFragment extends Fragment {
     public static Container container = null;
     private TabLayout tabLayout;
     private Menu mOptionsMenu;
-
     private OnContainerFragmentInteractionListener mListener;
+    private ViewPager viewPager;
+    private ContainerPagerAdapter adapter;
+
+    public interface ContainerFragmentListener {
+        void onContainerUpdate();
+    }
 
     /**
      * Use this factory method to create a new instance of
@@ -76,6 +81,11 @@ public class ContainerFragment extends Fragment {
         return fragment;
     }
 
+    private void loadContainer() {
+        new ContainerAPI().execute(mContainerUrl);
+        viewPager.setAdapter(adapter);
+    }
+
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -87,10 +97,6 @@ public class ContainerFragment extends Fragment {
         if (getArguments() != null) {
             mContainerId = getArguments().getString(ARG_CONTAINER_ID);
             mContainerUrl = getArguments().getString(ARG_CONTAINER_URL);
-        }
-
-        if (container == null) {
-            new ContainerAPI().execute(mContainerUrl);
         }
 
         setHasOptionsMenu(true);
@@ -106,8 +112,11 @@ public class ContainerFragment extends Fragment {
         tabLayout = (TabLayout) view.findViewById(R.id.container_tabs);
 
         // Get the ViewPager and set it's PagerAdapter so that it can display items
-        ViewPager viewPager = (ViewPager) view.findViewById(R.id.container_view_pager);
-        viewPager.setAdapter(new ContainerPagerAdapter(getFragmentManager()));
+        viewPager = (ViewPager) view.findViewById(R.id.container_view_pager);
+        adapter = new ContainerPagerAdapter(getFragmentManager());
+
+        // Load container
+        loadContainer();
 
         // Give the TabLayout the ViewPager
         tabLayout.setupWithViewPager(viewPager);
@@ -154,22 +163,30 @@ public class ContainerFragment extends Fragment {
         updateOptionsMenu();
     }
 
+    private RunAction.RunActionCallback runActionCallback = new RunAction.RunActionCallback() {
+        @Override
+        public void onActionComplete() {
+            updateOptionsMenu();
+            loadContainer();
+        }
+    };
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        final ContainerActionsAPI actionsAPI = new ContainerActionsAPI(getContext());
         switch (item.getItemId()) {
             case R.id.action_start:
-                new AlertDialog.Builder(getContext())
-                        .setTitle("Start Container")
-                        .setMessage("Are you sure you want to start " + container.getName() + "?")
-                        .setIcon(R.drawable.ic_start_black)
-                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                Log.d("ContainerActions", "Starting container " + container.getName());
-                            }
-                        })
-                        .setNegativeButton(android.R.string.no, null)
-                        .show();
+                Log.d("ContainerActions", "Starting container " + container.getName());
+                RunAction runContainerAction = new RunAction(
+                        getContext(),
+                        container,
+                        RunAction.ACTION_START,
+                        mContainerUrl,
+                        actionsAPI,
+                        ContainerAPI.class,
+                        runActionCallback
+                );
+                runContainerAction.start();
                 return true;
 
             case R.id.action_restart:
@@ -180,7 +197,16 @@ public class ContainerFragment extends Fragment {
                         .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                Log.d("ContainerActions", "Restarting container " + container.getName());
+                                RunAction runContainerAction = new RunAction(
+                                        getContext(),
+                                        container,
+                                        RunAction.ACTION_RESTART,
+                                        mContainerUrl,
+                                        actionsAPI,
+                                        ContainerAPI.class,
+                                        runActionCallback
+                                );
+                                runContainerAction.start();
                             }
                         })
                         .setNegativeButton(android.R.string.no, null)
@@ -195,7 +221,16 @@ public class ContainerFragment extends Fragment {
                         .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                Log.d("ContainerActions", "Stopping container " + container.getName());
+                                RunAction runContainerAction = new RunAction(
+                                        getContext(),
+                                        container,
+                                        RunAction.ACTION_STOP,
+                                        mContainerUrl,
+                                        actionsAPI,
+                                        ContainerAPI.class,
+                                        runActionCallback
+                                );
+                                runContainerAction.start();
                             }
                         })
                         .setNegativeButton(android.R.string.no, null)
@@ -204,26 +239,6 @@ public class ContainerFragment extends Fragment {
 
             default:
                 return super.onOptionsItemSelected(item);
-        }
-    }
-
-    private void performContainerAction(String action) {
-        String url = container.getActions().optString(action);
-
-        if (url == null) {
-            new AlertDialog.Builder(getContext())
-                    .setMessage("Failed to " + action + " container.")
-                    .setPositiveButton(android.R.string.ok, null)
-                    .show();
-            return;
-        }
-
-        new ContainerActionsAPI().execute(url, action);
-    }
-
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onContainerFragmentInteraction(uri);
         }
     }
 
@@ -262,7 +277,7 @@ public class ContainerFragment extends Fragment {
         void onContainerFragmentInteraction(Uri uri);
     }
 
-    private class ContainerPagerAdapter extends FragmentStatePagerAdapter {
+    class ContainerPagerAdapter extends FragmentStatePagerAdapter {
 
         ContainerPagerAdapter(FragmentManager fm) {
             super(fm);
@@ -342,121 +357,132 @@ public class ContainerFragment extends Fragment {
             }
         }
     }
+}
 
-    public class ContainerAPI extends AsyncTask<String, Void, JSONObject> {
 
-        private static final String TAG = "ContainerAPI";
+class ContainerAPI extends RunAction.ActionsAPI {
 
-        /**
-         * Perform the API call
-         *
-         * @param params Parameters
-         * @return API Response as string
-         */
-        @Override
-        protected JSONObject doInBackground(String... params) {
-            // Fetch the data
-            String jsonString = API.GET(params[0]);
-            Log.i(TAG, "Received JSON: " + jsonString);
+    private static final String TAG = "ContainerAPI";
 
-            // Parse the data
-            try {
-                return new JSONObject(jsonString);
-            } catch (JSONException e) {
-                Log.e(TAG, "Error processing JSON: " + e.getMessage());
-            }
-
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(JSONObject container) {
-            try {
-                // Get relevant data
-                String id = container.getString("id");
-                String name = container.getString("name");
-                String state = container.getString("state");
-                String description = container.getString("description");
-                String healthState = container.getString("healthState");
-                JSONObject links = container.getJSONObject("links");
-                JSONObject actions = container.getJSONObject("actions");
-
-                if (description == null) {
-                    description = "";
-                }
-
-                // Instantiate container
-                setContainer(
-                        new Container(id, name, state, description, healthState, links, actions, container)
-                );
-            } catch (JSONException e) {
-                Log.e(TAG, "JSON error encountered while processing data: " + e.getMessage());
-            }
-        }
+    ContainerAPI() {
+        super();
     }
 
-    public class ContainerActionsAPI extends AsyncTask<String, Void, JSONObject> {
+    /**
+     * Perform the API call
+     *
+     * @param params Parameters
+     * @return API Response as string
+     */
+    @Override
+    protected JSONObject doInBackground(String... params) {
+        // Fetch the data
+        String jsonString = API.GET(params[0]);
+        Log.i(TAG, "Received JSON: " + jsonString);
 
-        private static final String TAG = "ContainerActionsAPI";
-
-        private String action;
-
-        /**
-         * Perform the API call
-         *
-         * @param params Parameters
-         * @return API Response as string
-         */
-        @Override
-        protected JSONObject doInBackground(String... params) {
-            // Save action
-            action = params[1];
-
-            // Fetch the data
-            String jsonString = API.POST(params[0]);
-            Log.i(TAG, "Received JSON: " + jsonString);
-
-            // Parse the data
-            try {
-                return new JSONObject(jsonString);
-            } catch (JSONException e) {
-                Log.e(TAG, "Error processing JSON: " + e.getMessage());
-            }
-
-            return null;
+        // Parse the data
+        try {
+            return new JSONObject(jsonString);
+        } catch (JSONException e) {
+            Log.e(TAG, "Error processing JSON: " + e.getMessage());
         }
 
-        @Override
-        protected void onPostExecute(JSONObject container) {
-            try {
-                if (container == null) {
-                    new AlertDialog.Builder(getContext())
-                            .setMessage("Unable to stop container")
-                            .setPositiveButton(android.R.string.ok, null)
-                            .show();
-                    return;
-                }
+        return null;
+    }
 
-                // Get relevant data
-                String id = container.getString("id");
-                String name = container.getString("name");
-                String state = container.getString("state");
-                String description = container.getString("description");
-                String healthState = container.getString("healthState");
-                JSONObject links = container.getJSONObject("links");
-                JSONObject actions = container.getJSONObject("actions");
+    @Override
+    protected void onPostExecute(JSONObject container) {
+        try {
+            // Get relevant data
+            String id = container.getString("id");
+            String name = container.getString("name");
+            String state = container.getString("state");
+            String description = container.getString("description");
+            String healthState = container.getString("healthState");
+            JSONObject links = container.getJSONObject("links");
+            JSONObject actions = container.getJSONObject("actions");
 
-                if (description == null) {
-                    description = "";
-                }
-
-                // Instantiate container
-                setContainer(
-                        new Container(id, name, state, description, healthState, links, actions, container)
-                );
-            } catch (JSONException e) {
-                Log.e(TAG, "JSON error encountered while processing data: " + e.getMessage());
+            if (description == null) {
+                description = "";
             }
+
+            // Instantiate container
+            ContainerFragment.setContainer(
+                    new Container(id, name, state, description, healthState, links, actions, container)
+            );
+        } catch (JSONException e) {
+            Log.e(TAG, "JSON error encountered while processing data: " + e.getMessage());
+        }
+    }
+}
+
+class ContainerActionsAPI extends RunAction.ActionsAPI {
+
+    private static final String TAG = "ContainerActionsAPI";
+
+    private String action;
+    private Context context;
+
+    ContainerActionsAPI(Context context) {
+        super();
+        this.context = context;
+    }
+
+    /**
+     * Perform the API call
+     *
+     * @param params Parameters
+     * @return API Response as string
+     */
+    @Override
+    protected JSONObject doInBackground(String... params) {
+        // Save action
+        action = params[1];
+
+        // Fetch the data
+        String jsonString = API.POST(params[0]);
+        Log.i(TAG, "Received JSON: " + jsonString);
+
+        // Parse the data
+        try {
+            return new JSONObject(jsonString);
+        } catch (JSONException e) {
+            Log.e(TAG, "Error processing JSON: " + e.getMessage());
+        }
+
+        return null;
+    }
+
+    @Override
+    protected void onPostExecute(JSONObject container) {
+        try {
+            if (container == null) {
+                new AlertDialog.Builder(context)
+                        .setMessage("Unable to stop container")
+                        .setPositiveButton(android.R.string.ok, null)
+                        .show();
+                return;
+            }
+
+            // Get relevant data
+            String id = container.getString("id");
+            String name = container.getString("name");
+            String state = container.getString("state");
+            String description = container.getString("description");
+            String healthState = container.getString("healthState");
+            JSONObject links = container.getJSONObject("links");
+            JSONObject actions = container.getJSONObject("actions");
+
+            if (description == null) {
+                description = "";
+            }
+
+            // Instantiate container
+            ContainerFragment.setContainer(
+                    new Container(id, name, state, description, healthState, links, actions, container)
+            );
+        } catch (JSONException e) {
+            Log.e(TAG, "JSON error encountered while processing data: " + e.getMessage());
         }
     }
 }

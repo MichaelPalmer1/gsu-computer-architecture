@@ -69,7 +69,7 @@ public class API {
             conn.setRequestMethod("POST");
 
             // Check response code
-            if (conn.getResponseCode() != 200) {
+            if (conn.getResponseCode() < 200 || conn.getResponseCode() > 299) {
                 throw new Exception(
                         String.format(Locale.US,
                                 "Could not get data from remote source. HTTP response: %s (%d)",

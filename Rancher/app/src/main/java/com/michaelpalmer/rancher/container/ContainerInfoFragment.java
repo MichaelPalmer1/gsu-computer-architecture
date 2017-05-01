@@ -20,11 +20,12 @@ import com.michaelpalmer.rancher.schema.Container;
  * Use the {@link ContainerInfoFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class ContainerInfoFragment extends Fragment {
+public class ContainerInfoFragment extends Fragment implements ContainerFragment.ContainerFragmentListener {
     private static final String ARG_CONTAINER_ID = "container-id";
     private String mContainerId;
     private OnContainerInfoFragmentInteractionListener mListener;
     private String TAG = getClass().getSimpleName();
+    private TextView container_external_id, container_state;
 
     /**
      * Use this factory method to create a new instance of
@@ -55,21 +56,11 @@ public class ContainerInfoFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_container_info, container, false);
 
-        TextView container_external_id = (TextView) view.findViewById(R.id.container_info_external_id);
-        TextView container_state = (TextView) view.findViewById(R.id.container_info_state);
+        container_external_id = (TextView) view.findViewById(R.id.container_info_external_id);
+        container_state = (TextView) view.findViewById(R.id.container_info_state);
 
         if (ContainerFragment.getContainer() != null) {
-            try {
-                container_state.setText(ContainerFragment.getContainer().getProperty("state").toString());
-            } catch (NullPointerException e) {
-                container_state.setText(R.string.unknown);
-            }
-
-            try {
-                container_external_id.setText(ContainerFragment.getContainer().getProperty("externalId").toString());
-            } catch (NullPointerException e) {
-                container_external_id.setText(R.string.unknown);
-            }
+            onContainerUpdate();
         }
 
         return view;
@@ -96,6 +87,21 @@ public class ContainerInfoFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    @Override
+    public void onContainerUpdate() {
+        try {
+            container_state.setText(ContainerFragment.getContainer().getProperty("state").toString());
+        } catch (NullPointerException e) {
+            container_state.setText(R.string.unknown);
+        }
+
+        try {
+            container_external_id.setText(ContainerFragment.getContainer().getProperty("externalId").toString());
+        } catch (NullPointerException e) {
+            container_external_id.setText(R.string.unknown);
+        }
     }
 
     /**

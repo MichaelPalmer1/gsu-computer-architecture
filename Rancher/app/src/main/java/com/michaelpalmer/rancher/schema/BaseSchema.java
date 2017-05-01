@@ -61,6 +61,14 @@ public class BaseSchema {
         return dataMap.containsKey(key);
     }
 
+    public String getName() {
+        try {
+            return (String) getProperty("name");
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
     /**
      * Return this objects actions
      *
