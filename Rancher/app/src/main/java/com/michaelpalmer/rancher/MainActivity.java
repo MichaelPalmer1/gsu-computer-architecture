@@ -10,6 +10,7 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
@@ -34,6 +35,8 @@ public class MainActivity extends AppCompatActivity
         ContainerFragment.OnContainerFragmentInteractionListener,
         SharedPreferences.OnSharedPreferenceChangeListener {
 
+    private String rancher_url = null, project_id = "1a5";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,7 +58,7 @@ public class MainActivity extends AppCompatActivity
         preferences.registerOnSharedPreferenceChangeListener(this);
 
         // Get settings
-        String rancher_url = preferences.getString("rancher_url", null);
+        rancher_url = preferences.getString("rancher_url", null);
         final String rancher_access_key = preferences.getString("rancher_access_key", null);
         final String rancher_secret_key = preferences.getString("rancher_secret_key", null);
 
@@ -126,6 +129,29 @@ public class MainActivity extends AppCompatActivity
                     .addToBackStack(null)
                     .commit();
         } else if (id == R.id.nav_containers) {
+            try {
+                getSupportActionBar().setSubtitle(R.string.action_containers);
+            } catch (NullPointerException e) {
+                // Let it go
+            }
+
+            // Instantiate
+            ContainerListFragment containerListFragment = ContainerListFragment.newInstance(rancher_url, project_id);
+            if (containerListFragment == null) {
+                new AlertDialog.Builder(this)
+                        .setTitle("Error")
+                        .setMessage("Unable to load containers. Confirm Rancher settings are configured.")
+                        .setPositiveButton(android.R.string.ok, null)
+                        .show();
+                return false;
+            }
+
+            // Load fragment
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.fragment_layout, containerListFragment)
+                    .addToBackStack(null)
+                    .commit();
 
         } else if (id == R.id.nav_settings) {
             Intent intent = new Intent(this, SettingsActivity.class);

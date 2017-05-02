@@ -2,7 +2,6 @@ package com.michaelpalmer.rancher;
 
 import android.content.Context;
 import android.content.DialogInterface;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -26,6 +25,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * A fragment representing a list of Items.
@@ -55,7 +55,7 @@ public class ContainerListFragment extends Fragment implements SwipeRefreshLayou
             // Let it go
         }
         fragment.setArguments(args);
-        fragment.service = service;
+        ContainerListFragment.service = service;
         return fragment;
     }
 
@@ -70,6 +70,22 @@ public class ContainerListFragment extends Fragment implements SwipeRefreshLayou
         }
         fragment.setArguments(args);
         fragment.host = host;
+        return fragment;
+    }
+
+    public static ContainerListFragment newInstance(String rancherUrl, String projectId) {
+        ContainerListFragment fragment = new ContainerListFragment();
+        Bundle args = new Bundle();
+
+        if (rancherUrl == null || projectId == null) {
+            Log.w("ContainerListFragment", "Rancher settings are not configured.");
+            return null;
+        }
+
+        String url = String.format(Locale.US, "%s/v2-beta/projects/%s/containers/", rancherUrl, projectId);
+        args.putString(ARG_CONTAINERS_URL, url);
+
+        fragment.setArguments(args);
         return fragment;
     }
 
