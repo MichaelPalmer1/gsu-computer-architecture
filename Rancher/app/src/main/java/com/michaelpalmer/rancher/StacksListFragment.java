@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
@@ -30,7 +29,7 @@ import java.util.Locale;
  * Activities containing this fragment MUST implement the {@link OnStackListFragmentInteractionListener}
  * interface.
  */
-public class StacksListFragment extends Fragment implements View.OnClickListener, SwipeRefreshLayout.OnRefreshListener {
+public class StacksListFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
 
     private static final String ARG_PROJECT_ID = "project-id";
     private OnStackListFragmentInteractionListener mListener;
@@ -74,9 +73,6 @@ public class StacksListFragment extends Fragment implements View.OnClickListener
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_stack_list, container, false);
 
-        FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.add_stack);
-        fab.setOnClickListener(this);
-
         // Set the adapter
         recyclerView = (RecyclerView) view.findViewById(R.id.list);
         recyclerView.setAdapter(new StacksRecyclerViewAdapter(getContext(), Stack.ITEMS, mListener));
@@ -106,15 +102,6 @@ public class StacksListFragment extends Fragment implements View.OnClickListener
     public void onDetach() {
         super.onDetach();
         mListener = null;
-    }
-
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.add_stack:
-                // Go to create stack activity
-                break;
-        }
     }
 
     @Override
