@@ -6,6 +6,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.michaelpalmer.rancher.R;
 import com.michaelpalmer.rancher.schema.Container;
@@ -54,7 +55,64 @@ public class ContainerSecurityFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_container_security, container, false);
 
+        TextView privileged = (TextView) view.findViewById(R.id.privileged);
+        TextView memoryLimit = (TextView) view.findViewById(R.id.memory_limit);
+        TextView memoryReservation = (TextView) view.findViewById(R.id.memory_reservation);
+        TextView cpuPinning = (TextView) view.findViewById(R.id.cpu_pinning);
+        TextView pidMode = (TextView) view.findViewById(R.id.pid_mode);
+        TextView swapLimit = (TextView) view.findViewById(R.id.swap_limit);
+        TextView mcpuReservation = (TextView) view.findViewById(R.id.mcpu_reservation);
+        TextView cpuShares = (TextView) view.findViewById(R.id.cpu_shares);
+
         if (ContainerFragment.getContainer() != null) {
+
+            try {
+                privileged.setText(ContainerFragment.getContainer().getProperty("privileged").toString());
+            } catch (NullPointerException e) {
+                privileged.setText(R.string.unknown);
+            }
+
+            try {
+                memoryLimit.setText(ContainerFragment.getContainer().getProperty("memory").toString());
+            } catch (NullPointerException e) {
+                memoryLimit.setText(R.string.unknown);
+            }
+
+            try {
+                memoryReservation.setText(ContainerFragment.getContainer().getProperty("memoryReservation").toString());
+            } catch (NullPointerException e) {
+                memoryReservation.setText(R.string.unknown);
+            }
+
+            try {
+                cpuPinning.setText(ContainerFragment.getContainer().getProperty("cpuSet").toString());
+            } catch (NullPointerException e) {
+                cpuPinning.setText(R.string.unknown);
+            }
+
+            try {
+                pidMode.setText(ContainerFragment.getContainer().getProperty("pidMode").toString());
+            } catch (NullPointerException e) {
+                pidMode.setText(R.string.unknown);
+            }
+
+            try {
+                swapLimit.setText(ContainerFragment.getContainer().getProperty("memorySwap").toString());
+            } catch (NullPointerException e) {
+                swapLimit.setText(R.string.unknown);
+            }
+
+            try {
+                mcpuReservation.setText(ContainerFragment.getContainer().getProperty("milliCpuReservation").toString());
+            } catch (NullPointerException e) {
+                mcpuReservation.setText(R.string.unknown);
+            }
+
+            try {
+                cpuShares.setText(ContainerFragment.getContainer().getProperty("cpuShares").toString());
+            } catch (NullPointerException e) {
+                cpuShares.setText(R.string.unknown);
+            }
 
         }
 

@@ -25,7 +25,7 @@ public class ContainerInfoFragment extends Fragment implements ContainerFragment
     private String mContainerId;
     private OnContainerInfoFragmentInteractionListener mListener;
     private String TAG = getClass().getSimpleName();
-    private TextView container_external_id, container_state;
+    private TextView container_external_id, container_state, container_image, container_ip;
 
     /**
      * Use this factory method to create a new instance of
@@ -58,6 +58,8 @@ public class ContainerInfoFragment extends Fragment implements ContainerFragment
 
         container_external_id = (TextView) view.findViewById(R.id.container_info_external_id);
         container_state = (TextView) view.findViewById(R.id.container_info_state);
+        container_image = (TextView) view.findViewById(R.id.container_image);
+        container_ip = (TextView) view.findViewById(R.id.container_ip);
 
         if (ContainerFragment.getContainer() != null) {
             onContainerUpdate();
@@ -101,6 +103,18 @@ public class ContainerInfoFragment extends Fragment implements ContainerFragment
             container_external_id.setText(ContainerFragment.getContainer().getProperty("externalId").toString());
         } catch (NullPointerException e) {
             container_external_id.setText(R.string.unknown);
+        }
+
+        try {
+            container_image.setText(ContainerFragment.getContainer().getProperty("imageUuid").toString());
+        } catch (NullPointerException e) {
+            container_image.setText(R.string.unknown);
+        }
+
+        try {
+            container_ip.setText(ContainerFragment.getContainer().getProperty("primaryIpAddress").toString());
+        } catch (NullPointerException e) {
+            container_ip.setText(R.string.unknown);
         }
     }
 

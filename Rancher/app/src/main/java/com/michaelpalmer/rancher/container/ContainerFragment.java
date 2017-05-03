@@ -40,14 +40,14 @@ public class ContainerFragment extends Fragment {
     private static final String ARG_CONTAINER_ID = "container-id", ARG_CONTAINER_URL = "container-url";
     private static final int
             CONTAINER_TAB_INFO = 0,
-            CONTAINER_TAB_PORTS = 1,
-            CONTAINER_TAB_COMMAND = 2,
-            CONTAINER_TAB_VOLUMES = 3,
-            CONTAINER_TAB_NETWORKING = 4,
-            CONTAINER_TAB_SECURITY = 5,
-            CONTAINER_TAB_HEALTH_CHECK = 6,
-            CONTAINER_TAB_LABELS = 7,
-            CONTAINER_TAB_SCHEDULING = 8;
+//            CONTAINER_TAB_PORTS = 1,
+            CONTAINER_TAB_COMMAND = 1,
+            CONTAINER_TAB_VOLUMES = 2,
+            CONTAINER_TAB_NETWORKING = 3,
+            CONTAINER_TAB_SECURITY = 4,
+            CONTAINER_TAB_HEALTH_CHECK = 5,
+            CONTAINER_TAB_LABELS = 6;
+//            CONTAINER_TAB_SCHEDULING = 8;
     private String mContainerId, mContainerUrl;
     public static Container container = null;
     private TabLayout tabLayout;
@@ -285,7 +285,7 @@ public class ContainerFragment extends Fragment {
 
         @Override
         public int getCount() {
-            return 9;
+            return 7;
         }
 
         @Override
@@ -294,8 +294,8 @@ public class ContainerFragment extends Fragment {
                 case CONTAINER_TAB_INFO:
                     return ContainerInfoFragment.newInstance(container);
 
-                case CONTAINER_TAB_PORTS:
-                    return ContainerPortsFragment.newInstance(container);
+//                case CONTAINER_TAB_PORTS:
+//                    return ContainerPortsFragment.newInstance(container);
 
                 case CONTAINER_TAB_COMMAND:
                     return ContainerCommandFragment.newInstance(container);
@@ -315,8 +315,8 @@ public class ContainerFragment extends Fragment {
                 case CONTAINER_TAB_LABELS:
                     return ContainerLabelsFragment.newInstance(container);
 
-                case CONTAINER_TAB_SCHEDULING:
-                    return ContainerSchedulingFragment.newInstance(container);
+//                case CONTAINER_TAB_SCHEDULING:
+//                    return ContainerSchedulingFragment.newInstance(container);
 
             }
             return null;
@@ -328,8 +328,8 @@ public class ContainerFragment extends Fragment {
                 case CONTAINER_TAB_INFO:
                     return "Info";
 
-                case CONTAINER_TAB_PORTS:
-                    return "Ports";
+//                case CONTAINER_TAB_PORTS:
+//                    return "Ports";
 
                 case CONTAINER_TAB_COMMAND:
                     return "Command";
@@ -349,8 +349,8 @@ public class ContainerFragment extends Fragment {
                 case CONTAINER_TAB_LABELS:
                     return "Labels";
 
-                case CONTAINER_TAB_SCHEDULING:
-                    return "Scheduling";
+//                case CONTAINER_TAB_SCHEDULING:
+//                    return "Scheduling";
 
                 default:
                     return null;

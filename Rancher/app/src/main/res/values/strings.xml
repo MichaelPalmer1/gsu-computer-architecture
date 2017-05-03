@@ -26,5 +26,15 @@
     <string name="service_description">Description of the service</string>
     <string name="stack_name">Stack Name</string>
     <string name="description_of_the_stack">Description of the stack</string>
+    <string name="action_add">Add</string>
+    <string name="name">Name</string>
+    <string name="title_activity_add_service">Add Service</string>
+    <string name="section_format">Hello World from section: %1$d</string>
+    <string name="image">Image</string>
+    <string name="description">Description</string>
+    <string name="command">Command</string>
+    <string name="entry_point">Entry Point</string>
+    <string name="working_dir">Working Dir</string>
+    <string name="user">User</string>
 
 </resources>

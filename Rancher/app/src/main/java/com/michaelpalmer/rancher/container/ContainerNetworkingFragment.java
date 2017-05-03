@@ -6,9 +6,12 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.michaelpalmer.rancher.R;
 import com.michaelpalmer.rancher.schema.Container;
+
+import org.json.JSONArray;
 
 
 /**
@@ -54,7 +57,45 @@ public class ContainerNetworkingFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_container_networking, container, false);
 
+        TextView networkMode = (TextView) view.findViewById(R.id.network_mode);
+        TextView hostname = (TextView) view.findViewById(R.id.hostname);
+        TextView domainName = (TextView) view.findViewById(R.id.domain_name);
+        TextView resolvingServers = (TextView) view.findViewById(R.id.resolving_servers);
+        TextView searchDomains = (TextView) view.findViewById(R.id.search_domains);
+
         if (ContainerFragment.getContainer() != null) {
+
+            try {
+                networkMode.setText(ContainerFragment.getContainer().getProperty("networkMode").toString());
+            } catch (NullPointerException e) {
+                networkMode.setText(R.string.unknown);
+            }
+
+            try {
+                hostname.setText(ContainerFragment.getContainer().getProperty("hostname").toString());
+            } catch (NullPointerException e) {
+                hostname.setText(R.string.unknown);
+            }
+
+            try {
+                domainName.setText(ContainerFragment.getContainer().getProperty("domainName").toString());
+            } catch (NullPointerException e) {
+                domainName.setText(R.string.unknown);
+            }
+
+            try {
+                JSONArray servers = (JSONArray) ContainerFragment.getContainer().getProperty("dns");
+                resolvingServers.setText(servers.join(", "));
+            } catch (Exception e) {
+                resolvingServers.setText(R.string.unknown);
+            }
+
+            try {
+                JSONArray domains = (JSONArray) ContainerFragment.getContainer().getProperty("dnsSearch");
+                searchDomains.setText(domains.join(", "));
+            } catch (Exception e) {
+                searchDomains.setText(R.string.unknown);
+            }
 
         }
 

@@ -30,4 +30,28 @@
         android:layout_height="wrap_content"
         android:hint="Container id"/>
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        android:text="Image"/>
+
+    <TextView
+        android:id="@+id/container_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="Container image"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        android:text="Container IP"/>
+
+    <TextView
+        android:id="@+id/container_ip"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="Container ip"/>
+
 </LinearLayout>

@@ -6,9 +6,15 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TableLayout;
+import android.widget.TableRow;
+import android.widget.TextView;
 
 import com.michaelpalmer.rancher.R;
 import com.michaelpalmer.rancher.schema.Container;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 
 /**
@@ -54,8 +60,39 @@ public class ContainerVolumesFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_container_volumes, container, false);
 
+        TableLayout tableLayout = (TableLayout) view;
+
         if (ContainerFragment.getContainer() != null) {
 
+            JSONArray mounts;
+
+            try {
+                mounts = (JSONArray) ContainerFragment.getContainer().getProperty("mounts");
+
+                TableRow.LayoutParams params =
+                        new TableRow.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 0.5f);
+
+                for (int i = 0; i < mounts.length(); i++) {
+                    JSONObject mountObject = mounts.getJSONObject(i);
+
+                    TableRow tableRow = new TableRow(getContext());
+                    TextView volumeName = new TextView(getContext());
+                    TextView volumeMount = new TextView(getContext());
+                    volumeName.setLayoutParams(params);
+                    volumeMount.setLayoutParams(params);
+
+                    volumeName.setText(mountObject.optString("volumeName"));
+                    volumeMount.setText(mountObject.optString("path"));
+
+                    tableRow.addView(volumeName);
+                    tableRow.addView(volumeMount);
+
+                    tableLayout.addView(tableRow);
+                }
+
+            } catch (Exception e) {
+                // Just return
+            }
         }
 
         return view;
