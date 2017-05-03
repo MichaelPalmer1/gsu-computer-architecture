@@ -3,6 +3,7 @@ package com.michaelpalmer.rancher;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
@@ -13,7 +14,11 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.michaelpalmer.rancher.container.ContainerFragment;
@@ -22,8 +27,15 @@ import com.michaelpalmer.rancher.schema.Host;
 import com.michaelpalmer.rancher.schema.Service;
 import com.michaelpalmer.rancher.schema.Stack;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.net.Authenticator;
 import java.net.PasswordAuthentication;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
@@ -36,6 +48,8 @@ public class MainActivity extends AppCompatActivity
         SharedPreferences.OnSharedPreferenceChangeListener {
 
     private String rancher_url = null, project_id = "1a5";
+    private NavigationView navigationView;
+    private String accountName, accountLogin;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,7 +64,7 @@ public class MainActivity extends AppCompatActivity
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
         // Get preferences and register on change listener
@@ -75,6 +89,8 @@ public class MainActivity extends AppCompatActivity
             });
         }
 
+        loadAccountInfo();
+
         try {
             getSupportActionBar().setSubtitle(R.string.action_stacks);
         } catch (NullPointerException e) {
@@ -87,6 +103,10 @@ public class MainActivity extends AppCompatActivity
                 .replace(R.id.fragment_layout, new StacksListFragment())
                 .addToBackStack(null)
                 .commit();
+    }
+
+    private void loadAccountInfo() {
+        new AccountAPI().execute();
     }
 
     @Override
@@ -103,6 +123,18 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
+
+        // Update the check state
+        if (item.isCheckable()) {
+            Menu menu = navigationView.getMenu();
+            for (int i = 0; i < menu.size(); i++) {
+                MenuItem menuItem = menu.getItem(i);
+                if (menuItem.isCheckable()) {
+                    menuItem.setChecked(false);
+                }
+            }
+            item.setChecked(true);
+        }
 
         if (id == R.id.nav_stacks) {
             try {
@@ -259,5 +291,50 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onHostFragmentInteraction(Uri uri) {
 
+    }
+
+    private class AccountAPI extends AsyncTask<Void, Void, JSONObject> {
+
+        private static final String TAG = "AccountAPI";
+
+        /**
+         * Perform the API call
+         *
+         * @param params Parameters
+         * @return API Response as string
+         */
+        @Override
+        protected JSONObject doInBackground(Void... params) {
+
+            String jsonString = API.GET(String.format(Locale.US, "%s/v2-beta/identities", rancher_url));
+            Log.i(TAG, "Received JSON: " + jsonString);
+            try {
+                JSONObject jsonObject = new JSONObject(jsonString);
+                JSONArray identities = jsonObject.getJSONArray("data");
+                return identities.getJSONObject(0);
+            } catch (JSONException e) {
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(JSONObject account) {
+            if (account == null) {
+                return;
+            }
+
+            View view = navigationView.getHeaderView(0);
+            TextView name = (TextView) view.findViewById(R.id.account_name);
+            TextView login = (TextView) view.findViewById(R.id.login);
+
+            try {
+                accountName = account.optString("name");
+                accountLogin = account.optString("login");
+                name.setText(accountName);
+                login.setText(accountLogin);
+            } catch (Exception e) {
+                // Ignore
+            }
+        }
     }
 }

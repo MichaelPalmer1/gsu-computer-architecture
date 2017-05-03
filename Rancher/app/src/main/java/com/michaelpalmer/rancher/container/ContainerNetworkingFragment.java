@@ -58,6 +58,7 @@ public class ContainerNetworkingFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_container_networking, container, false);
 
         TextView networkMode = (TextView) view.findViewById(R.id.network_mode);
+        TextView requestedIp = (TextView) view.findViewById(R.id.requested_ip);
         TextView hostname = (TextView) view.findViewById(R.id.hostname);
         TextView domainName = (TextView) view.findViewById(R.id.domain_name);
         TextView resolvingServers = (TextView) view.findViewById(R.id.resolving_servers);
@@ -69,6 +70,12 @@ public class ContainerNetworkingFragment extends Fragment {
                 networkMode.setText(ContainerFragment.getContainer().getProperty("networkMode").toString());
             } catch (NullPointerException e) {
                 networkMode.setText(R.string.unknown);
+            }
+
+            try {
+                requestedIp.setText(ContainerFragment.getContainer().getProperty("ip").toString());
+            } catch (NullPointerException e) {
+                requestedIp.setText(R.string.unknown);
             }
 
             try {

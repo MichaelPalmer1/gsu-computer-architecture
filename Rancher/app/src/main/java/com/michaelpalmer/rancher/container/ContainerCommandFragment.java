@@ -96,11 +96,24 @@ public class ContainerCommandFragment extends Fragment {
                 container_user.setText(R.string.unknown);
             }
 
-//            try {
-//                container_console.setText(ContainerFragment.getContainer().getProperty("console").toString());
-//            } catch (NullPointerException e) {
-//                container_console.setText(R.string.unknown);
-//            }
+            try {
+                String console,
+                        tty = ContainerFragment.getContainer().getProperty("tty").toString(),
+                        stdinOpen = ContainerFragment.getContainer().getProperty("stdinOpen").toString();
+                boolean hasTTY = tty.equals("true"), hasInteractive = stdinOpen.equals("true");
+                if (hasInteractive && hasTTY) {
+                    console = "Interactive & TTY";
+                } else if (hasInteractive) {
+                    console = "Interactive";
+                } else if (hasTTY) {
+                    console = "TTY";
+                } else {
+                    console = "None";
+                }
+                container_console.setText(console);
+            } catch (NullPointerException e) {
+                container_console.setText(R.string.unknown);
+            }
 
             try {
                 container_auto_restart.setText(
