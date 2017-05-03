@@ -221,7 +221,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onStackListFragmentInteraction(Stack item) {
         try {
-            getSupportActionBar().setSubtitle(R.string.action_services);
+            getSupportActionBar().setSubtitle(item.getName());
         } catch (NullPointerException e) {
             // Let it go
         }
@@ -241,7 +241,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onServiceListFragmentInteraction(Service item) {
         try {
-            getSupportActionBar().setSubtitle(R.string.action_containers);
+            getSupportActionBar().setSubtitle(item.getName());
         } catch (NullPointerException e) {
             // Let it go
         }

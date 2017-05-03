@@ -46,7 +46,15 @@ public class ServicesRecyclerViewAdapter extends RecyclerView.Adapter<ServicesRe
         } else {
             holder.mDescriptionView.setText(" ");
         }
-        holder.mScaleView.setText(holder.mItem.getProperty("currentScale").toString());
+
+        try {
+            holder.mScaleView.setText(holder.mItem.getProperty("currentScale").toString());
+        } catch (NullPointerException e) {
+            Object scale = holder.mItem.getProperty("scale");
+            if (scale != null) {
+                holder.mScaleView.setText(scale.toString());
+            }
+        }
 
         switch (holder.mItem.getHealthState()) {
             case "healthy":
