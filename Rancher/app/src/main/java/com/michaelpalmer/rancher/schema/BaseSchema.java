@@ -44,6 +44,19 @@ public class BaseSchema {
     }
 
     /**
+     * Get a property string
+     * @param key Property
+     * @return Property value
+     */
+    public String getString(String key) {
+        try {
+            return (String) getProperty(key);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    /**
      * Get all of the available keys
      *
      * @return Key set

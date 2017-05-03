@@ -352,7 +352,7 @@ public class RunAction {
                             (state.equals(STATE_RUNNING) && progressDialog.getProgress() > 25);
 
                 case ACTION_RESTART:
-                    if (resource.getType().equals("service")) {
+                    if (resource.getString("baseType").equals("service")) {
                         return state.equals(STATE_ACTIVE);
                     }
                     return state.equals(STATE_RUNNING);
