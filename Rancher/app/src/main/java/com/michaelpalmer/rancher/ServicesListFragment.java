@@ -1,14 +1,17 @@
 package com.michaelpalmer.rancher;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -28,7 +31,7 @@ import java.util.List;
  * Activities containing this fragment MUST implement the {@link OnServiceListFragmentInteractionListener}
  * interface.
  */
-public class ServicesListFragment extends Fragment implements View.OnClickListener, SwipeRefreshLayout.OnRefreshListener {
+public class ServicesListFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
 
     private static final String ARG_STACK_ID = "stack-id", ARG_SERVICES_URL = "services-url";
     private String mStackId = null, mServicesUrl = null;
@@ -71,15 +74,14 @@ public class ServicesListFragment extends Fragment implements View.OnClickListen
             mStackId = getArguments().getString(ARG_STACK_ID);
             mServicesUrl = getArguments().getString(ARG_SERVICES_URL);
         }
+
+        setHasOptionsMenu(true);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_service_list, container, false);
-
-        FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.add_service);
-        fab.setOnClickListener(this);
 
         // Set the adapter
         recyclerView = (RecyclerView) view.findViewById(R.id.list);
@@ -93,6 +95,26 @@ public class ServicesListFragment extends Fragment implements View.OnClickListen
         loadServices();
 
         return view;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.menu_stack_service, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_add:
+                // Open add activity
+                Intent intent = new Intent(getContext(), AddServiceActivity.class);
+                startActivity(intent);
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     @Override
@@ -110,15 +132,6 @@ public class ServicesListFragment extends Fragment implements View.OnClickListen
     public void onDetach() {
         super.onDetach();
         mListener = null;
-    }
-
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.add_service:
-                // Go to create service activity
-                break;
-        }
     }
 
     @Override

@@ -5,12 +5,15 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -30,7 +33,7 @@ import java.util.Locale;
  * Activities containing this fragment MUST implement the {@link OnStackListFragmentInteractionListener}
  * interface.
  */
-public class StacksListFragment extends Fragment implements View.OnClickListener, SwipeRefreshLayout.OnRefreshListener {
+public class StacksListFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
 
     private static final String ARG_PROJECT_ID = "project-id";
     private OnStackListFragmentInteractionListener mListener;
@@ -67,15 +70,14 @@ public class StacksListFragment extends Fragment implements View.OnClickListener
         if (getArguments() != null) {
             mProjectId = getArguments().getString(ARG_PROJECT_ID);
         }
+
+        setHasOptionsMenu(true);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_stack_list, container, false);
-
-        FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.add_stack);
-        fab.setOnClickListener(this);
 
         // Set the adapter
         recyclerView = (RecyclerView) view.findViewById(R.id.list);
@@ -89,6 +91,25 @@ public class StacksListFragment extends Fragment implements View.OnClickListener
         loadStacks();
 
         return view;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.menu_stack_service, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_add:
+                NewStackDialog dialog = new NewStackDialog();
+                dialog.show(getFragmentManager(), dialog.getClass().getSimpleName());
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     @Override
@@ -106,15 +127,6 @@ public class StacksListFragment extends Fragment implements View.OnClickListener
     public void onDetach() {
         super.onDetach();
         mListener = null;
-    }
-
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.add_stack:
-                // Go to create stack activity
-                break;
-        }
     }
 
     @Override
