@@ -2,105 +2,80 @@ package com.michaelpalmer.rancher.service;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.RadioGroup;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 
 import com.michaelpalmer.rancher.R;
 
 
-public class ServiceCommandFragment extends Fragment {
+public class ServiceCommandFragment extends Fragment implements View.OnClickListener {
     private String TAG = getClass().getSimpleName();
+
+    private TableLayout tableEnvVars;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_service_command, container, false);
 
-//        TextView container_commands = (TextView) view.findViewById(R.id.container_command_commands);
-//        TextView container_entry_point = (TextView) view.findViewById(R.id.container_command_entry_point);
-//        TextView container_working_dir = (TextView) view.findViewById(R.id.container_command_working_dir);
-//        TextView container_user = (TextView) view.findViewById(R.id.container_command_user);
-//        TextView container_console = (TextView) view.findViewById(R.id.container_command_console);
-//        TextView container_auto_restart = (TextView) view.findViewById(R.id.container_command_auto_restart);
-//        TableLayout container_environment = (TableLayout) view.findViewById(R.id.container_command_environment_table);
-//
-//        if (ContainerFragment.getContainer() != null) {
-//            try {
-//                JSONArray commands = (JSONArray) ContainerFragment.getContainer().getProperty("command");
-//                container_commands.setText(commands.join(", "));
-//            } catch (Exception e) {
-//                container_commands.setText(R.string.unknown);
-//            }
-//
-//            try {
-//                container_entry_point.setText(ContainerFragment.getContainer().getProperty("entryPoint").toString());
-//            } catch (NullPointerException e) {
-//                container_entry_point.setText(R.string.unknown);
-//            }
-//
-//            try {
-//                container_working_dir.setText(ContainerFragment.getContainer().getProperty("workingDir").toString());
-//            } catch (NullPointerException e) {
-//                container_working_dir.setText(R.string.unknown);
-//            }
-//
-//            try {
-//                container_user.setText(ContainerFragment.getContainer().getProperty("user").toString());
-//            } catch (NullPointerException e) {
-//                container_user.setText(R.string.unknown);
-//            }
-//
-////            try {
-////                container_console.setText(ContainerFragment.getContainer().getProperty("console").toString());
-////            } catch (NullPointerException e) {
-////                container_console.setText(R.string.unknown);
-////            }
-//
-//            try {
-//                container_auto_restart.setText(
-//                        ContainerFragment.getContainer().getProperty("restartPolicy").toString());
-//            } catch (NullPointerException e) {
-//                container_auto_restart.setText(R.string.unknown);
-//            }
-//
-//            try {
-//                JSONObject environment = (JSONObject) ContainerFragment.getContainer().getProperty("environment");
-//                Iterator<String> keys = environment.keys();
-//
-//                // Loop through the keys
-//                while (keys.hasNext()) {
-//                    // Get values
-//                    String key = keys.next();
-//                    String value = environment.optString(key);
-//
-//                    // Create row
-//                    TableRow row = new TableRow(getContext());
-//
-//                    // Create text views
-//                    TextView envKey = new TextView(getContext());
-//                    TextView envValue = new TextView(getContext());
-//
-//                    // Set layout params
-//                    envKey.setLayoutParams(new TableRow.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 0.5f));
-//                    envValue.setLayoutParams(new TableRow.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 0.5f));
-//
-//                    // Set values
-//                    envKey.setText(key);
-//                    envValue.setText(value);
-//
-//                    // Add to row
-//                    row.addView(envKey);
-//                    row.addView(envValue);
-//
-//                    // Add to table
-//                    container_environment.addView(row);
-//                }
-//            } catch (NullPointerException e) {
-//                // Do nothing
-//            }
-//        }
+        EditText command = (EditText) view.findViewById(R.id.command);
+        EditText entryPoint = (EditText) view.findViewById(R.id.entry_point);
+        EditText workingDir = (EditText) view.findViewById(R.id.working_dir);
+        EditText user = (EditText) view.findViewById(R.id.user);
+
+        RadioGroup radioConsole = (RadioGroup) view.findViewById(R.id.consoleMode);
+        RadioGroup radioRestartPolicy = (RadioGroup) view.findViewById(R.id.restartPolicy);
+
+        tableEnvVars = (TableLayout) view.findViewById(R.id.tableEnvVars);
+
+        Button btnAddEnvVar = (Button) view.findViewById(R.id.btnAddEnvVar);
+        btnAddEnvVar.setOnClickListener(this);
 
         return view;
+    }
+
+    private void addEnvVar() {
+        TableRow.LayoutParams params = new TableRow.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 0.45f);
+        TableRow.LayoutParams params2 = new TableRow.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 0.1f);
+        final TableRow tableRow = new TableRow(getContext());
+        EditText varName = new EditText(getContext());
+        EditText varValue = new EditText(getContext());
+        ImageButton btnRemoveVar = new ImageButton(getContext());
+        varName.setLayoutParams(params);
+        varValue.setLayoutParams(params);
+        varName.setInputType(InputType.TYPE_CLASS_TEXT);
+        varValue.setInputType(InputType.TYPE_CLASS_TEXT);
+        btnRemoveVar.setLayoutParams(params2);
+        btnRemoveVar.setImageResource(R.drawable.ic_delete_black);
+
+        btnRemoveVar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                tableEnvVars.removeView(tableRow);
+            }
+        });
+
+        tableRow.addView(varName);
+        tableRow.addView(varValue);
+        tableRow.addView(btnRemoveVar);
+
+        tableEnvVars.addView(tableRow);
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.btnAddEnvVar:
+                addEnvVar();
+                break;
+        }
     }
 }

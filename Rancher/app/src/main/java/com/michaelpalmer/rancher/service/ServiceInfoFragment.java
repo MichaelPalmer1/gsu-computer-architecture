@@ -9,7 +9,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.michaelpalmer.rancher.R;
-import com.michaelpalmer.rancher.schema.Container;
 import com.michaelpalmer.rancher.schema.Stack;
 
 
@@ -21,7 +20,7 @@ import com.michaelpalmer.rancher.schema.Stack;
  * Use the {@link ServiceInfoFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class ServiceInfoFragment extends Fragment implements ContainerFragment.ContainerFragmentListener {
+public class ServiceInfoFragment extends Fragment implements ServiceFragment.ContainerFragmentListener {
     private static final String ARG_STACK_ID = "stack-id";
     private String mStackId;
     private OnServiceInfoFragmentInteractionListener mListener;
@@ -55,7 +54,7 @@ public class ServiceInfoFragment extends Fragment implements ContainerFragment.C
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_container_info, container, false);
+        View view = inflater.inflate(R.layout.fragment_service_info, container, false);
         return view;
     }
 
@@ -85,13 +84,13 @@ public class ServiceInfoFragment extends Fragment implements ContainerFragment.C
     @Override
     public void onContainerUpdate() {
         try {
-            container_state.setText(ContainerFragment.getContainer().getProperty("state").toString());
+            container_state.setText(ServiceFragment.getContainer().getProperty("state").toString());
         } catch (NullPointerException e) {
             container_state.setText(R.string.unknown);
         }
 
         try {
-            container_external_id.setText(ContainerFragment.getContainer().getProperty("externalId").toString());
+            container_external_id.setText(ServiceFragment.getContainer().getProperty("externalId").toString());
         } catch (NullPointerException e) {
             container_external_id.setText(R.string.unknown);
         }

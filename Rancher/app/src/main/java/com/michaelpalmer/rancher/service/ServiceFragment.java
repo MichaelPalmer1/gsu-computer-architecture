@@ -35,10 +35,10 @@ import org.json.JSONObject;
  * Activities that contain this fragment must implement the
  * {@link OnContainerFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link ContainerFragment#newInstance} factory method to
+ * Use the {@link ServiceFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class ContainerFragment extends Fragment {
+public class ServiceFragment extends Fragment {
     private static final String ARG_CONTAINER_ID = "container-id", ARG_CONTAINER_URL = "container-url";
     private static final int
             CONTAINER_TAB_INFO = 0,
@@ -67,12 +67,12 @@ public class ContainerFragment extends Fragment {
      * this fragment using the provided parameters.
      *
      * @param container Container
-     * @return A new instance of fragment ContainerFragment.
+     * @return A new instance of fragment ServiceFragment.
      */
-    public static ContainerFragment newInstance(Container container) {
-        ContainerFragment fragment = new ContainerFragment();
+    public static ServiceFragment newInstance(Container container) {
+        ServiceFragment fragment = new ServiceFragment();
         Bundle args = new Bundle();
-        ContainerFragment.setContainer(container);
+        ServiceFragment.setContainer(container);
         args.putString(ARG_CONTAINER_ID, container.getId());
         try {
             args.putString(ARG_CONTAINER_URL, container.getLinks().getString("self"));
@@ -84,7 +84,7 @@ public class ContainerFragment extends Fragment {
     }
 
     private void loadContainer() {
-        new ContainerAPI().execute(mContainerUrl);
+        new ServiceAPI().execute(mContainerUrl);
         viewPager.setAdapter(adapter);
     }
 
@@ -175,7 +175,7 @@ public class ContainerFragment extends Fragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        final ContainerActionsAPI actionsAPI = new ContainerActionsAPI(getContext());
+        final ServiceActionsAPI actionsAPI = new ServiceActionsAPI(getContext());
         switch (item.getItemId()) {
             case R.id.action_start:
                 Log.d("ContainerActions", "Starting container " + container.getName());
@@ -185,7 +185,7 @@ public class ContainerFragment extends Fragment {
                         RunAction.ACTION_START,
                         mContainerUrl,
                         actionsAPI,
-                        ContainerAPI.class,
+                        ServiceAPI.class,
                         runActionCallback
                 );
                 runContainerAction.start();
@@ -205,7 +205,7 @@ public class ContainerFragment extends Fragment {
                                         RunAction.ACTION_RESTART,
                                         mContainerUrl,
                                         actionsAPI,
-                                        ContainerAPI.class,
+                                        ServiceAPI.class,
                                         runActionCallback
                                 );
                                 runContainerAction.start();
@@ -229,7 +229,7 @@ public class ContainerFragment extends Fragment {
                                         RunAction.ACTION_STOP,
                                         mContainerUrl,
                                         actionsAPI,
-                                        ContainerAPI.class,
+                                        ServiceAPI.class,
                                         runActionCallback
                                 );
                                 runContainerAction.start();
@@ -266,7 +266,7 @@ public class ContainerFragment extends Fragment {
     }
 
     public static void setContainer(Container container) {
-        ContainerFragment.container = container;
+        ServiceFragment.container = container;
     }
 
     /**
@@ -297,28 +297,28 @@ public class ContainerFragment extends Fragment {
                     return ContainerInfoFragment.newInstance(container);
 
                 case CONTAINER_TAB_PORTS:
-                    return ContainerPortsFragment.newInstance(container);
+                    return ServicePortsFragment.newInstance(container);
 
                 case CONTAINER_TAB_COMMAND:
                     return ContainerCommandFragment.newInstance(container);
 
                 case CONTAINER_TAB_VOLUMES:
-                    return ContainerVolumesFragment.newInstance(container);
+                    return ServiceVolumesFragment.newInstance(container);
 
                 case CONTAINER_TAB_NETWORKING:
-                    return ContainerNetworkingFragment.newInstance(container);
+                    return ServiceNetworkingFragment.newInstance(container);
 
                 case CONTAINER_TAB_SECURITY:
-                    return ContainerSecurityFragment.newInstance(container);
+                    return ServiceSecurityFragment.newInstance(container);
 
                 case CONTAINER_TAB_HEALTH_CHECK:
-                    return ContainerHealthCheckFragment.newInstance(container);
+                    return ServiceHealthCheckFragment.newInstance(container);
 
                 case CONTAINER_TAB_LABELS:
-                    return ContainerLabelsFragment.newInstance(container);
+                    return ServiceLabelsFragment.newInstance(container);
 
                 case CONTAINER_TAB_SCHEDULING:
-                    return ContainerSchedulingFragment.newInstance(container);
+                    return ServiceSchedulingFragment.newInstance(container);
 
             }
             return null;
@@ -362,11 +362,11 @@ public class ContainerFragment extends Fragment {
 }
 
 
-class ContainerAPI extends RunAction.ActionsAPI {
+class ServiceAPI extends RunAction.ActionsAPI {
 
-    private static final String TAG = "ContainerAPI";
+    private static final String TAG = "ServiceAPI";
 
-    ContainerAPI() {
+    ServiceAPI() {
         super();
     }
 
@@ -409,7 +409,7 @@ class ContainerAPI extends RunAction.ActionsAPI {
             }
 
             // Instantiate container
-            ContainerFragment.setContainer(
+            ServiceFragment.setContainer(
                     new Container(id, name, state, description, healthState, links, actions, container)
             );
         } catch (JSONException e) {
@@ -418,14 +418,14 @@ class ContainerAPI extends RunAction.ActionsAPI {
     }
 }
 
-class ContainerActionsAPI extends RunAction.ActionsAPI {
+class ServiceActionsAPI extends RunAction.ActionsAPI {
 
-    private static final String TAG = "ContainerActionsAPI";
+    private static final String TAG = "ServiceActionsAPI";
 
     private String action;
     private Context context;
 
-    ContainerActionsAPI(Context context) {
+    ServiceActionsAPI(Context context) {
         super();
         this.context = context;
     }
@@ -480,7 +480,7 @@ class ContainerActionsAPI extends RunAction.ActionsAPI {
             }
 
             // Instantiate container
-            ContainerFragment.setContainer(
+            ServiceFragment.setContainer(
                     new Container(id, name, state, description, healthState, links, actions, container)
             );
         } catch (JSONException e) {

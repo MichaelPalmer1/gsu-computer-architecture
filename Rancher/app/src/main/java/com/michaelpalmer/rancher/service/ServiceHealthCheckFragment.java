@@ -14,15 +14,15 @@ import com.michaelpalmer.rancher.schema.Container;
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link OnContainerVolumesFragmentInteractionListener} interface
+ * {@link OnContainerHealthCheckFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link ContainerVolumesFragment#newInstance} factory method to
+ * Use the {@link ServiceHealthCheckFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class ContainerVolumesFragment extends Fragment {
+public class ServiceHealthCheckFragment extends Fragment {
     private static final String ARG_CONTAINER_ID = "container-id";
     private String mContainerId;
-    private OnContainerVolumesFragmentInteractionListener mListener;
+    private OnContainerHealthCheckFragmentInteractionListener mListener;
     private String TAG = getClass().getSimpleName();
 
     /**
@@ -30,10 +30,10 @@ public class ContainerVolumesFragment extends Fragment {
      * this fragment using the provided parameters.
      *
      * @param container Container
-     * @return A new instance of fragment ContainerVolumesFragment.
+     * @return A new instance of fragment ServiceHealthCheckFragment.
      */
-    public static ContainerVolumesFragment newInstance(Container container) {
-        ContainerVolumesFragment fragment = new ContainerVolumesFragment();
+    public static ServiceHealthCheckFragment newInstance(Container container) {
+        ServiceHealthCheckFragment fragment = new ServiceHealthCheckFragment();
         Bundle args = new Bundle();
         args.putString(ARG_CONTAINER_ID, container.getId());
         fragment.setArguments(args);
@@ -52,9 +52,9 @@ public class ContainerVolumesFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_container_volumes, container, false);
+        View view = inflater.inflate(R.layout.fragment_container_health_check, container, false);
 
-        if (ContainerFragment.getContainer() != null) {
+        if (ServiceFragment.getContainer() != null) {
 
         }
 
@@ -63,7 +63,7 @@ public class ContainerVolumesFragment extends Fragment {
 
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
-            mListener.onContainerVolumesFragmentInteraction(uri);
+            mListener.onContainerHealthCheckFragmentInteraction(uri);
         }
     }
 
@@ -90,7 +90,7 @@ public class ContainerVolumesFragment extends Fragment {
      * to the activity and potentially other fragments contained in that
      * activity.
      */
-    public interface OnContainerVolumesFragmentInteractionListener {
-        void onContainerVolumesFragmentInteraction(Uri uri);
+    public interface OnContainerHealthCheckFragmentInteractionListener {
+        void onContainerHealthCheckFragmentInteraction(Uri uri);
     }
 }

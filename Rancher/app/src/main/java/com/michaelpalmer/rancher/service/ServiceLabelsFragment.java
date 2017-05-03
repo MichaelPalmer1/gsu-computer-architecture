@@ -23,10 +23,10 @@ import java.util.Iterator;
  * Activities that contain this fragment must implement the
  * {@link OnContainerLabelsFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link ContainerLabelsFragment#newInstance} factory method to
+ * Use the {@link ServiceLabelsFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class ContainerLabelsFragment extends Fragment {
+public class ServiceLabelsFragment extends Fragment {
     private static final String ARG_CONTAINER_ID = "container-id";
     private String mContainerId;
     private OnContainerLabelsFragmentInteractionListener mListener;
@@ -39,8 +39,8 @@ public class ContainerLabelsFragment extends Fragment {
      * @param container Container
      * @return A new instance of fragment ServiceInfoFragment.
      */
-    public static ContainerLabelsFragment newInstance(Container container) {
-        ContainerLabelsFragment fragment = new ContainerLabelsFragment();
+    public static ServiceLabelsFragment newInstance(Container container) {
+        ServiceLabelsFragment fragment = new ServiceLabelsFragment();
         Bundle args = new Bundle();
         args.putString(ARG_CONTAINER_ID, container.getId());
         fragment.setArguments(args);
@@ -63,8 +63,8 @@ public class ContainerLabelsFragment extends Fragment {
 
         TableLayout tableLayout = (TableLayout) view.findViewById(R.id.container_labels_table);
 
-        if (ContainerFragment.getContainer() != null) {
-            JSONObject labels = (JSONObject) ContainerFragment.getContainer().getProperty("labels");
+        if (ServiceFragment.getContainer() != null) {
+            JSONObject labels = (JSONObject) ServiceFragment.getContainer().getProperty("labels");
             Iterator<String> keys = labels.keys();
             while (keys.hasNext()) {
                 String key = keys.next();

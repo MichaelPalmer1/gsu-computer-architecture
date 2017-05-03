@@ -14,15 +14,15 @@ import com.michaelpalmer.rancher.schema.Container;
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link OnContainerNetworkingFragmentInteractionListener} interface
+ * {@link OnContainerSecurityFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link ContainerNetworkingFragment#newInstance} factory method to
+ * Use the {@link ServiceSecurityFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class ContainerNetworkingFragment extends Fragment {
+public class ServiceSecurityFragment extends Fragment {
     private static final String ARG_CONTAINER_ID = "container-id";
     private String mContainerId;
-    private OnContainerNetworkingFragmentInteractionListener mListener;
+    private OnContainerSecurityFragmentInteractionListener mListener;
     private String TAG = getClass().getSimpleName();
 
     /**
@@ -32,8 +32,8 @@ public class ContainerNetworkingFragment extends Fragment {
      * @param container Container
      * @return A new instance of fragment ServiceInfoFragment.
      */
-    public static ContainerNetworkingFragment newInstance(Container container) {
-        ContainerNetworkingFragment fragment = new ContainerNetworkingFragment();
+    public static ServiceSecurityFragment newInstance(Container container) {
+        ServiceSecurityFragment fragment = new ServiceSecurityFragment();
         Bundle args = new Bundle();
         args.putString(ARG_CONTAINER_ID, container.getId());
         fragment.setArguments(args);
@@ -52,9 +52,9 @@ public class ContainerNetworkingFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_container_networking, container, false);
+        View view = inflater.inflate(R.layout.fragment_container_security, container, false);
 
-        if (ContainerFragment.getContainer() != null) {
+        if (ServiceFragment.getContainer() != null) {
 
         }
 
@@ -63,18 +63,18 @@ public class ContainerNetworkingFragment extends Fragment {
 
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
-            mListener.onContainerNetworkingFragmentInteraction(uri);
+            mListener.onContainerSecurityFragmentInteraction(uri);
         }
     }
 
 //    @Override
 //    public void onAttach(Context context) {
 //        super.onAttach(context);
-//        if (context instanceof OnContainerNetworkingFragmentInteractionListener) {
-//            mListener = (OnContainerNetworkingFragmentInteractionListener) context;
+//        if (context instanceof OnContainerSchedulingFragmentInteractionListener) {
+//            mListener = (OnContainerSchedulingFragmentInteractionListener) context;
 //        } else {
 //            throw new RuntimeException(context.toString()
-//                    + " must implement OnContainerNetworkingFragmentInteractionListener");
+//                    + " must implement OnContainerSchedulingFragmentInteractionListener");
 //        }
 //    }
 
@@ -90,7 +90,7 @@ public class ContainerNetworkingFragment extends Fragment {
      * to the activity and potentially other fragments contained in that
      * activity.
      */
-    public interface OnContainerNetworkingFragmentInteractionListener {
-        void onContainerNetworkingFragmentInteraction(Uri uri);
+    public interface OnContainerSecurityFragmentInteractionListener {
+        void onContainerSecurityFragmentInteraction(Uri uri);
     }
 }

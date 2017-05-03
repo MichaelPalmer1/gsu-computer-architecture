@@ -14,15 +14,15 @@ import com.michaelpalmer.rancher.schema.Container;
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link OnContainerHealthCheckFragmentInteractionListener} interface
+ * {@link OnContainerPortsFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link ContainerHealthCheckFragment#newInstance} factory method to
+ * Use the {@link ServicePortsFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class ContainerHealthCheckFragment extends Fragment {
+public class ServicePortsFragment extends Fragment {
     private static final String ARG_CONTAINER_ID = "container-id";
     private String mContainerId;
-    private OnContainerHealthCheckFragmentInteractionListener mListener;
+    private OnContainerPortsFragmentInteractionListener mListener;
     private String TAG = getClass().getSimpleName();
 
     /**
@@ -30,10 +30,10 @@ public class ContainerHealthCheckFragment extends Fragment {
      * this fragment using the provided parameters.
      *
      * @param container Container
-     * @return A new instance of fragment ContainerHealthCheckFragment.
+     * @return A new instance of fragment ServiceInfoFragment.
      */
-    public static ContainerHealthCheckFragment newInstance(Container container) {
-        ContainerHealthCheckFragment fragment = new ContainerHealthCheckFragment();
+    public static ServicePortsFragment newInstance(Container container) {
+        ServicePortsFragment fragment = new ServicePortsFragment();
         Bundle args = new Bundle();
         args.putString(ARG_CONTAINER_ID, container.getId());
         fragment.setArguments(args);
@@ -52,9 +52,9 @@ public class ContainerHealthCheckFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_container_health_check, container, false);
+        View view = inflater.inflate(R.layout.fragment_container_ports, container, false);
 
-        if (ContainerFragment.getContainer() != null) {
+        if (ServiceFragment.getContainer() != null) {
 
         }
 
@@ -63,18 +63,18 @@ public class ContainerHealthCheckFragment extends Fragment {
 
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
-            mListener.onContainerHealthCheckFragmentInteraction(uri);
+            mListener.onContainerPortsFragmentInteraction(uri);
         }
     }
 
 //    @Override
 //    public void onAttach(Context context) {
 //        super.onAttach(context);
-//        if (context instanceof OnContainerHealthCheckFragmentInteractionListener) {
-//            mListener = (OnContainerHealthCheckFragmentInteractionListener) context;
+//        if (context instanceof OnContainerSchedulingFragmentInteractionListener) {
+//            mListener = (OnContainerSchedulingFragmentInteractionListener) context;
 //        } else {
 //            throw new RuntimeException(context.toString()
-//                    + " must implement OnContainerHealthCheckFragmentInteractionListener");
+//                    + " must implement OnContainerSchedulingFragmentInteractionListener");
 //        }
 //    }
 
@@ -89,8 +89,12 @@ public class ContainerHealthCheckFragment extends Fragment {
      * fragment to allow an interaction in this fragment to be communicated
      * to the activity and potentially other fragments contained in that
      * activity.
+     * <p>
+     * See the Android Training lesson <a href=
+     * "http://developer.android.com/training/basics/fragments/communicating.html"
+     * >Communicating with Other Fragments</a> for more information.
      */
-    public interface OnContainerHealthCheckFragmentInteractionListener {
-        void onContainerHealthCheckFragmentInteraction(Uri uri);
+    public interface OnContainerPortsFragmentInteractionListener {
+        void onContainerPortsFragmentInteraction(Uri uri);
     }
 }

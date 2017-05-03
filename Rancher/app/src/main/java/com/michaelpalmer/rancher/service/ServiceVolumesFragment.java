@@ -14,15 +14,15 @@ import com.michaelpalmer.rancher.schema.Container;
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link OnContainerSchedulingFragmentInteractionListener} interface
+ * {@link OnContainerVolumesFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link ContainerSchedulingFragment#newInstance} factory method to
+ * Use the {@link ServiceVolumesFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class ContainerSchedulingFragment extends Fragment {
+public class ServiceVolumesFragment extends Fragment {
     private static final String ARG_CONTAINER_ID = "container-id";
     private String mContainerId;
-    private OnContainerSchedulingFragmentInteractionListener mListener;
+    private OnContainerVolumesFragmentInteractionListener mListener;
     private String TAG = getClass().getSimpleName();
 
     /**
@@ -30,10 +30,10 @@ public class ContainerSchedulingFragment extends Fragment {
      * this fragment using the provided parameters.
      *
      * @param container Container
-     * @return A new instance of fragment ContainerSchedulingFragment.
+     * @return A new instance of fragment ServiceVolumesFragment.
      */
-    public static ContainerSchedulingFragment newInstance(Container container) {
-        ContainerSchedulingFragment fragment = new ContainerSchedulingFragment();
+    public static ServiceVolumesFragment newInstance(Container container) {
+        ServiceVolumesFragment fragment = new ServiceVolumesFragment();
         Bundle args = new Bundle();
         args.putString(ARG_CONTAINER_ID, container.getId());
         fragment.setArguments(args);
@@ -52,9 +52,9 @@ public class ContainerSchedulingFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_container_scheduling, container, false);
+        View view = inflater.inflate(R.layout.fragment_container_volumes, container, false);
 
-        if (ContainerFragment.getContainer() != null) {
+        if (ServiceFragment.getContainer() != null) {
 
         }
 
@@ -63,18 +63,18 @@ public class ContainerSchedulingFragment extends Fragment {
 
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
-            mListener.onContainerSchedulingFragmentInteraction(uri);
+            mListener.onContainerVolumesFragmentInteraction(uri);
         }
     }
 
 //    @Override
 //    public void onAttach(Context context) {
 //        super.onAttach(context);
-//        if (context instanceof OnContainerSchedulingFragmentInteractionListener) {
-//            mListener = (OnContainerSchedulingFragmentInteractionListener) context;
+//        if (context instanceof OnContainerHealthCheckFragmentInteractionListener) {
+//            mListener = (OnContainerHealthCheckFragmentInteractionListener) context;
 //        } else {
 //            throw new RuntimeException(context.toString()
-//                    + " must implement OnContainerSchedulingFragmentInteractionListener");
+//                    + " must implement OnContainerHealthCheckFragmentInteractionListener");
 //        }
 //    }
 
@@ -90,7 +90,7 @@ public class ContainerSchedulingFragment extends Fragment {
      * to the activity and potentially other fragments contained in that
      * activity.
      */
-    public interface OnContainerSchedulingFragmentInteractionListener {
-        void onContainerSchedulingFragmentInteraction(Uri uri);
+    public interface OnContainerVolumesFragmentInteractionListener {
+        void onContainerVolumesFragmentInteraction(Uri uri);
     }
 }
